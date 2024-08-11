@@ -48,7 +48,6 @@ namespace Player
                         _playerState.ChangeState(StateType.Jump);
                         _moveDirection.y = _playerJumpPower;
                         _characterController.Move(_moveDirection * Time.deltaTime);
-                        Debug.Log($"Jump! {_moveDirection.y}");
                     }
                     else if (_playerState.GetPlayerState == StateType.Jump)
                     {
