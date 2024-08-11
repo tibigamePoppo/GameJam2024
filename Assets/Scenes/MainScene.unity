@@ -514,6 +514,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 11400110, guid: 9d850d27c452b7a46917c610d2440097, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400112, guid: 9d850d27c452b7a46917c610d2440097, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400112, guid: 9d850d27c452b7a46917c610d2440097, type: 3}
+      propertyPath: targetObj
+      value: 
+      objectReference: {fileID: 11282123}
+    - target: {fileID: 11400112, guid: 9d850d27c452b7a46917c610d2440097, type: 3}
+      propertyPath: isIkActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -544,6 +560,7 @@ GameObject:
   - component: {fileID: 1853005705}
   - component: {fileID: 1853005710}
   - component: {fileID: 1853005709}
+  - component: {fileID: 1853005711}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -590,7 +607,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _playerMoveSpeed: 5
   _playerSlideSpeed: 5
-  _playerJumpPower: 6
+  _playerJumpPower: 6.5
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!4 &1853005708
 Transform:
   m_ObjectHideFlags: 0
@@ -646,6 +666,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd2dfcc5b57aa94478fd93464497e263, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1853005711
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1853005704}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9469a8e2368dbbf41b50808dfd418cd0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _startHP: 3
 --- !u!1 &2009468080 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 100338, guid: 9d850d27c452b7a46917c610d2440097, type: 3}

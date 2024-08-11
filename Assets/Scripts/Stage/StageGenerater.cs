@@ -70,7 +70,6 @@ namespace Stage
             var wallPosition = RandomInts(index);
             for (int i = 0; i < index; i++)
             {
-                Debug.Log($"r2 = {wallPosition[i]}");
                 Vector3 instantiatePosition = new Vector3(-2 + wallPosition[i] % 3 * 2, 1 + wallPosition[i] / 3 * 2,xLength);
                 list.Add(Instantiate(_wallObject, instantiatePosition, Quaternion.identity));
             }

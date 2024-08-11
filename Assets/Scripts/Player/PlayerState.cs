@@ -33,5 +33,9 @@ namespace Player
         {
             _state.Value = state;
         }
+        private void Update()
+        {
+            Debug.Log($"CurrentState is {GetPlayerState}");
+        }
     }
 }
