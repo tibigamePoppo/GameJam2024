@@ -4,6 +4,9 @@ using UnityEngine;
 using UniRx;
 using UniRx.Triggers;
 using System;
+using Cysharp.Threading.Tasks;
+using System.Threading;
+using static Unity.VisualScripting.Member;
 
 namespace Player
 {
@@ -15,9 +18,12 @@ namespace Player
         private float _playerSlideSpeed;
         [SerializeField]
         private float _playerJumpPower;
+        [SerializeField] private LayerMask groundLayer;
+
         private CharacterController _characterController;
         private Rigidbody _rigidbody;
         private PlayerState _playerState;
+        private CancellationTokenSource _source;
 
         private bool UsedSecondJump = false;
 
@@ -29,6 +35,7 @@ namespace Player
             _characterController = GetComponent<CharacterController>();
             _rigidbody = GetComponent<Rigidbody>();
             _playerState = GetComponent<PlayerState>();
+            _source = new CancellationTokenSource();
 
             _moveDirection.z = _playerMoveSpeed;
             _playerState.OnChangePlayerState
@@ -37,13 +44,14 @@ namespace Player
                     _isPlaying = true;
                 });
 
+            //ジャンプの処理
             this.UpdateAsObservable()
-                .Where(_ => _isPlaying)
+                .Where(_ => _isPlaying && _playerState.GetPlayerState != StateType.Attack)
                 .Where(_ => Input.GetKey(KeyCode.Space))
-                .ThrottleFirst(TimeSpan.FromSeconds(0.5))
+                .ThrottleFirst(TimeSpan.FromSeconds(0.4))
                 .Subscribe(_ =>
                 {
-                    if(_playerState.GetPlayerState == StateType.Dash)
+                    if (_playerState.GetPlayerState == StateType.Dash && isGrounded())
                     {
                         _playerState.ChangeState(StateType.Jump);
                         _moveDirection.y = _playerJumpPower;
@@ -55,6 +63,25 @@ namespace Player
                         _moveDirection.y = _playerJumpPower;
                         _characterController.Move(_moveDirection * Time.deltaTime);
                     }
+                }).AddTo(this);
+
+            //ジャンプ後の着地の判定
+            _playerState.OnChangePlayerState
+                .Where(x => x == StateType.Jump)
+                .Delay(TimeSpan.FromSeconds(0.5f))
+                .Subscribe(x => {
+                    GroundCheck(_source.Token);
+                });
+
+            //キャラクターの加速
+
+            this.UpdateAsObservable()
+                .Where(_ => _isPlaying)
+                .ThrottleFirst(TimeSpan.FromSeconds(1))
+                .Subscribe(_ =>
+                {
+                    _playerMoveSpeed += 0.1f;
+                    _moveDirection.z = _playerMoveSpeed;
                 }).AddTo(this);
         }
         private void Update()
@@ -72,15 +99,24 @@ namespace Player
 
             _moveDirection.y += Physics.gravity.y * Time.deltaTime;
 
-            if (_characterController.isGrounded)
-            {
-                _moveDirection.y = -0.5f;
-                if (_playerState.GetPlayerState == StateType.Jump || _playerState.GetPlayerState == StateType.SecondJump)
-                {
-                    _playerState.ChangeState(StateType.Dash);
-                }
-            }
             _characterController.Move(_moveDirection * Time.deltaTime);
+        }
+        private async UniTask GroundCheck(CancellationToken token)
+        {
+            await UniTask.WaitUntil(() => isGrounded(), cancellationToken : token);
+            if (_playerState.GetPlayerState == StateType.Jump || _playerState.GetPlayerState == StateType.SecondJump)
+            {
+                _playerState.ChangeState(StateType.Dash);
+            }
+        }
+        private bool isGrounded()
+        {
+            return Physics.Raycast(transform.position, Vector3.down, 0.1f, groundLayer);
+        }
+        private void OnDestroy()
+        {
+            _source.Cancel();
+            _source.Dispose();
         }
     }
 

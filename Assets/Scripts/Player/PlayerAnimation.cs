@@ -36,7 +36,6 @@ namespace Player
                 .Where(x => x == StateType.Attack)
                 .Subscribe(_ =>
                 {
-                    Debug.Log("AttackAnimation");
                     _animator.SetTrigger("Sword");
                 }).AddTo(this);
         }

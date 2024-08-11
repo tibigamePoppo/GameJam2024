@@ -27,22 +27,16 @@ namespace Player
                 {
                     if (_playerState.GetPlayerState != StateType.Attack)
                     {
-                        Debug.Log("Attack");
                         _playerState.ChangeState(StateType.Attack);
                     }
                     
                 }).AddTo(this);
             _playerState.OnChangePlayerState
                 .Where(x => x == StateType.Attack)
-                .Delay(TimeSpan.FromSeconds(1f))
+                .Delay(TimeSpan.FromSeconds(0.65f))
                 .Subscribe(_ => {
                     _playerState.ChangeState(StateType.Dash);
                 });
-        }
-
-        void Update()
-        {
-
         }
     }
 }
