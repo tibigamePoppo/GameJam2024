@@ -47,7 +47,7 @@ namespace Player
             //ƒWƒƒƒ“ƒv‚Ìˆ—
             this.UpdateAsObservable()
                 .Where(_ => _isPlaying && _playerState.GetPlayerState != StateType.Attack)
-                .Where(_ => Input.GetKey(KeyCode.Space))
+                .Where(_ => Input.GetKeyDown(KeyCode.Space))
                 .ThrottleFirst(TimeSpan.FromSeconds(0.4))
                 .Subscribe(_ =>
                 {
@@ -57,7 +57,7 @@ namespace Player
                         _moveDirection.y = _playerJumpPower;
                         _characterController.Move(_moveDirection * Time.deltaTime);
                     }
-                    else if (_playerState.GetPlayerState == StateType.Jump)
+                    else if (_playerState.GetPlayerState == StateType.Jump && !isGrounded())
                     {
                         _playerState.ChangeState(StateType.SecondJump);
                         _moveDirection.y = _playerJumpPower;
