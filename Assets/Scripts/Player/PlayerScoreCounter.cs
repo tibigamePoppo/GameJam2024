@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 using UniRx.Triggers;
+using Manager;
 
 namespace Player
 {
@@ -11,12 +12,12 @@ namespace Player
 
         void Start()
         {
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-
+            var Manager = FindObjectOfType<IngameManager>();
+            var state = GetComponent<PlayerState>();
+            var playerMove = GetComponent<PlayerMove>();
+            this.UpdateAsObservable()
+                .Where(_ => state.GetPlayerState != StateType.Idle)
+                .Subscribe(_ => Manager.AddScore(Time.deltaTime * playerMove.PlayerMoveSpeed)).AddTo(this);
         }
     }
 }
