@@ -36,16 +36,20 @@ namespace Manager
                         ChangeState(IngameType.Ingame);
                     }
                 }).AddTo(this);
-            ChangeState(IngameType.Ingame);
+            this.UpdateAsObservable()
+                .Where(_ => Input.anyKey)
+                .First()
+                .Subscribe(_ => ChangeState(IngameType.Ingame)).AddTo(this);
+            ChangeState(IngameType.Ready);
         }
 
         public void ChangeState(IngameType state)
         {
             _state.Value = state;
         }
-        public void AddScor(float value)
+        public void AddScore(float value)
         {
-
+            _score.Value += value;
         }
     }
 

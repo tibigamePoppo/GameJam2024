@@ -30,6 +30,9 @@ namespace Player
         private bool _isPlaying;
         Vector3 _moveDirection = Vector3.zero;
         int _sideDirection = 0;
+
+        public float PlayerMoveSpeed { get => _playerMoveSpeed; }
+
         void Start()
         {
             _characterController = GetComponent<CharacterController>();
