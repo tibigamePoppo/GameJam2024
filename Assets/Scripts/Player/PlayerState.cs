@@ -31,6 +31,7 @@ namespace Player
 
         public void ChangeState(StateType state)
         {
+            Debug.Log($"changeState {state}");
             _state.Value = state;
         }
         private void Update()
