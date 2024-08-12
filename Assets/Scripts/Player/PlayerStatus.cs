@@ -1,28 +1,38 @@
 using Interface;
 using Player;
+using Singleton.Effect;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UniRx;
 using UnityEngine;
 
-public class PlayerStatus : MonoBehaviour, IDamagable
+namespace Player
 {
-    [SerializeField]
-    private int _startHP;
-    private ReactiveProperty<int> _currentHp = new ReactiveProperty<int>();
-    public IObservable<int> OnChangeCurrentHp { get { return _currentHp; } }
-    void Start()
+    public class PlayerStatus : MonoBehaviour, IDamagable
     {
-        _currentHp.Value = _startHP;
-    }
-    public void Damage(int damage) 
-    { 
-        _currentHp.Value = damage > 0 ? _currentHp.Value - damage : 0;
-        Debug.Log($"ダメージを受けた。現在体力は{_currentHp.Value}");
-        if (_currentHp.Value <= 0)
+        [SerializeField]
+        private int _startHP;
+        private const int MAXHP = 18;
+        private ReactiveProperty<int> _currentHp = new ReactiveProperty<int>();
+        public IObservable<int> OnChangeCurrentHp { get { return _currentHp; } }
+        void Start()
         {
-            Debug.Log("DEAD");
+            _currentHp.Value = _startHP;
+        }
+        public void Damage(int damage)
+        {
+            _currentHp.Value = damage > 0 ? _currentHp.Value - damage : 0;
+            //Debug.Log($"ダメージを受けた。現在体力は{_currentHp.Value}");
+            if (_currentHp.Value <= 0)
+            {
+                Debug.Log("DEAD");
+            }
+        }
+        public void Heal(int healValue)
+        {
+            _currentHp.Value = _currentHp.Value + healValue < MAXHP ? _currentHp.Value + healValue : _currentHp.Value;
+            //Debug.Log($"回復した！現在体力は{_currentHp.Value}");
         }
     }
 }

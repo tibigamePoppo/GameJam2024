@@ -6,6 +6,7 @@ using UniRx;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using Player;
 
 namespace Presenter
 {

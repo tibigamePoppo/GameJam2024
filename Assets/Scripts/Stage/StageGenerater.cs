@@ -20,26 +20,21 @@ namespace Stage
         private int _stageMaxCount;
         private int _stageCount;
         private GameObject _player;
-        private Vector3 _instancePosition = Vector3.zero;
+        private Vector3 _instancePosition = new Vector3(0,-0.25f,0);
         private Queue<List<GameObject>> _stageInstantiateObjects = new Queue<List<GameObject>>();
+        private const int STAGELENGTH = 16;
        
         void Start()
         {
             for (int i = 0; i < _stageMaxCount; i++)
             {
-                /*
-                Instantiate(_stageObject,_instancePosition,Quaternion.identity);
-                SetWal(_stageCount + 1, _stageCount * 12);
-                _instancePosition.z += 12;
-                _stageCount++;
-                */
                 InstantiateStageBlock();
             }
             _player = GameObject.FindWithTag("Player");
             this.UpdateAsObservable()
                 .Subscribe(_ =>
                 {
-                    if (_player.transform.position.z >= (_stageCount - 5) * 12)
+                    if (_player.transform.position.z >= (_stageCount - 5) * STAGELENGTH)
                     {
                         InstantiateStageBlock();
                     }
@@ -49,8 +44,8 @@ namespace Stage
         {
             List<GameObject> list = new List<GameObject>();
             list.Add(Instantiate(_stageObject, _instancePosition, Quaternion.identity));
-            _instancePosition.z += 12;
-            var walls = SetWal((_stageCount + 1) % 9, _stageCount * 12);
+            _instancePosition.z += STAGELENGTH;
+            var walls = SetWal((_stageCount + 1) % 9, _stageCount * STAGELENGTH);
             list = list.Concat(walls).ToList();
             _stageInstantiateObjects.Enqueue(list);
             _stageCount++;
