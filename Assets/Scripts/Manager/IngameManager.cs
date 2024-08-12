@@ -17,6 +17,8 @@ namespace Manager
     {
         ReactiveProperty<IngameType> _state = new ReactiveProperty<IngameType>();
         public IObservable<IngameType> OnChangeIngameState { get { return _state; } }
+        ReactiveProperty<float> _score = new ReactiveProperty<float>(0);
+        public IObservable<float> Score { get { return _score; } }
 
         void Start()
         {
@@ -40,6 +42,10 @@ namespace Manager
         public void ChangeState(IngameType state)
         {
             _state.Value = state;
+        }
+        public void AddScor(float value)
+        {
+
         }
     }
 
