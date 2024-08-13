@@ -10,7 +10,7 @@ public class DamageBlock : MonoBehaviour, IDamagable
     
     private void OnTriggerEnter(Collider other)
     {
-        if(other.transform.root.TryGetComponent(out IDamagable damagable))
+        if(other.transform.root.TryGetComponent(out IDamagable damagable) && other.transform.root.CompareTag("Player"))
         {
             EffectEmiter.Instance.EmitEffect(EffectType.WallHit, other.ClosestPointOnBounds(this.transform.position));
             damagable.Damage(_damage);
