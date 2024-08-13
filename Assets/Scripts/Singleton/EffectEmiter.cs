@@ -24,7 +24,8 @@ namespace Singleton.Effect
         public void EmitEffect(EffectType type, Vector3 emitPosition)
         {
             var emitEffect = effects.First(e => e.name.Equals(type.ToString()));
-            Instantiate(emitEffect,emitPosition,Quaternion.identity);
+            var effect = Instantiate(emitEffect,emitPosition,Quaternion.identity);
+            Destroy(effect,10f);
         }
 
     }

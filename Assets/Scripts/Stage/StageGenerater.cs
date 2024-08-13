@@ -71,8 +71,15 @@ namespace Stage
             for (int i = 0; i < index; i++)
             {
                 Vector3 instantiatePosition = new Vector3(-2 + wallPosition[i] % 3 * 2, 1 + wallPosition[i] / 3 * 2, xLength + 5);
-                GameObject InstanceObject = UnityEngine.Random.Range(0, 100) < 5 ? _ballObject : _wallObject;
-                list.Add(Instantiate(InstanceObject, instantiatePosition, Quaternion.identity));
+                bool SpawnBall = UnityEngine.Random.Range(0, 100) < 5;
+                if (SpawnBall)
+                {
+                    Instantiate(_ballObject, instantiatePosition, Quaternion.identity);
+                }
+                else
+                {
+                    list.Add(Instantiate(_wallObject, instantiatePosition, Quaternion.identity));
+                }
             }
             return list;
         }

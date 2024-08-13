@@ -83,7 +83,6 @@ namespace Player
                         shotDirection = Vector3.Normalize(shotDirection);
                         rigidbody.velocity = Vector3.zero;
                         rigidbody.AddForce(shotDirection * (10 + _playerStatus.GetMoveSpeed * 1.5f), ForceMode.Impulse);
-                        Debug.Log($"HIT!! {hit.transform.position} ");
                         findAttack = true;
                     }
                 }
