@@ -11,7 +11,8 @@ namespace Manager
     {
         Ready,
         Ingame,
-        Pause
+        Pause,
+        GameOver
     }
     public class IngameManager : MonoBehaviour
     {
@@ -19,6 +20,8 @@ namespace Manager
         public IObservable<IngameType> OnChangeIngameState { get { return _state; } }
         ReactiveProperty<float> _score = new ReactiveProperty<float>(0);
         public IObservable<float> Score { get { return _score; } }
+
+        public float GetScore { get => _score.Value; }
 
         void Start()
         {

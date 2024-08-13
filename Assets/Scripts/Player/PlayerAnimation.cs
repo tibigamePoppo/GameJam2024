@@ -50,6 +50,13 @@ namespace Player
                     _animator.SetTrigger("Sword");
                     SEManager.Instance.ShotSE(SEType.Attack);
                 }).AddTo(this);
+            _playerState.OnChangePlayerState
+                .Where(x => x == StateType.Dead)
+                .Subscribe(_ =>
+                {
+                    _animator.SetTrigger("Dead");
+                    SEManager.Instance.ShotSE(SEType.Dead);
+                }).AddTo(this);
             this.FixedUpdateAsObservable()
                 .Subscribe(_ =>
                 {

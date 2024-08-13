@@ -9,14 +9,13 @@ namespace Player
 {
     public class PlayerScoreCounter : MonoBehaviour
     {
-
         void Start()
         {
             var Manager = FindObjectOfType<IngameManager>();
             var state = GetComponent<PlayerState>();
             var playerMove = GetComponent<PlayerMove>();
             this.UpdateAsObservable()
-                .Where(_ => state.GetPlayerState != StateType.Idle)
+                .Where(_ => state.GetPlayerState != StateType.Idle && state.GetPlayerState != StateType.Dead)
                 .Subscribe(_ => Manager.AddScore(Time.deltaTime * playerMove.PlayerMoveSpeed)).AddTo(this);
         }
     }

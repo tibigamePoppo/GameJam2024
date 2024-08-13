@@ -13,7 +13,8 @@ namespace Player
         Dash,
         Jump,
         SecondJump,
-        Attack
+        Attack,
+        Dead,
     }
     public class PlayerState : MonoBehaviour
     {
@@ -27,10 +28,16 @@ namespace Player
             Manager.OnChangeIngameState
                 .Where(x => x == IngameType.Ingame)
                 .Subscribe(_ => ChangeState(StateType.Dash)).AddTo(this);
+            OnChangePlayerState
+                .Where (x => x == StateType.Dead)
+                .Subscribe(_ => {
+                    Manager.ChangeState(IngameType.GameOver);
+                }).AddTo(this);
         }
 
         public void ChangeState(StateType state)
         {
+            if (_state.Value == StateType.Dead) return;
             //Debug.Log($"changeState {state}");
             _state.Value = state;
         }
