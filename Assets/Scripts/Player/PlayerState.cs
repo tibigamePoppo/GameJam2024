@@ -31,12 +31,12 @@ namespace Player
 
         public void ChangeState(StateType state)
         {
-            Debug.Log($"changeState {state}");
+            //Debug.Log($"changeState {state}");
             _state.Value = state;
         }
         private void Update()
         {
-            Debug.Log($"CurrentState is {GetPlayerState}");
+            //Debug.Log($"CurrentState is {GetPlayerState}");
         }
     }
 }
