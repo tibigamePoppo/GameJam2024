@@ -17,12 +17,14 @@ namespace Player
         [SerializeField]
         private GameObject _boxcollderPosition;
         private PlayerState _playerState;
-        private Vector3 halfExtents = new Vector3(0.8f, 0.8f, 0.5f); // 各軸についてのボックスサイズの半分
+        private PlayerStatus _playerStatus;
+        private Vector3 halfExtents = new Vector3(0.8f, 0.8f, 1f); // 各軸についてのボックスサイズの半分
 
         private bool _isPlaying;
         void Start()
         {
             _playerState = GetComponent<PlayerState>();
+            _playerStatus = GetComponent<PlayerStatus>();
             _playerState.OnChangePlayerState
                 .Where(x => x != StateType.Idle)
                 .Subscribe(x =>
@@ -37,6 +39,7 @@ namespace Player
                     if (_playerState.GetPlayerState != StateType.Attack)
                     {
                         _playerState.ChangeState(StateType.Attack);
+                        AttackAsync().Forget();
                     }
 
                 }).AddTo(this);
@@ -53,7 +56,6 @@ namespace Player
                 .Subscribe(_ =>
                 {
                     _playerState.ChangeState(StateType.Dash);
-                    AttackAsync().Forget();
                 });
         }
         private async UniTaskVoid AttackAsync()
@@ -80,7 +82,7 @@ namespace Player
                         shotDirection.y = Math.Abs(shotDirection.y);
                         shotDirection = Vector3.Normalize(shotDirection);
                         rigidbody.velocity = Vector3.zero;
-                        rigidbody.AddForce(shotDirection * 20,ForceMode.Impulse);
+                        rigidbody.AddForce(shotDirection * (10 + _playerStatus.GetMoveSpeed * 1.5f), ForceMode.Impulse);
                         Debug.Log($"HIT!! {hit.transform.position} ");
                         findAttack = true;
                     }

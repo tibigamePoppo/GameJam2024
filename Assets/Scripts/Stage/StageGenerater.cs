@@ -17,12 +17,14 @@ namespace Stage
         [SerializeField]
         private GameObject _wallObject;
         [SerializeField]
+        private GameObject _ballObject;
+        [SerializeField]
         private int _stageMaxCount;
         private int _stageCount;
         private GameObject _player;
         private Vector3 _instancePosition = new Vector3(0,-0.25f,0);
         private Queue<List<GameObject>> _stageInstantiateObjects = new Queue<List<GameObject>>();
-        private const int STAGELENGTH = 16;
+        private const int STAGELENGTH = 20;
        
         void Start()
         {
@@ -45,7 +47,10 @@ namespace Stage
             List<GameObject> list = new List<GameObject>();
             list.Add(Instantiate(_stageObject, _instancePosition, Quaternion.identity));
             _instancePosition.z += STAGELENGTH;
-            var walls = SetWal((_stageCount + 1) % 9, _stageCount * STAGELENGTH);
+            int randomValue = UnityEngine.Random.Range(0, 2);
+            int wallCount = (_stageCount + 1) % 9 > 7 || (_stageCount + 1) % 9 == 0 ? (_stageCount + 1) % 9 : (_stageCount + 1 + randomValue) % 9;
+            if (_stageCount == 0) wallCount = 0;//ç≈èâÇÕï«Ç™ê‚ëŒÇ…óNÇ©Ç»Ç¢
+            var walls = SetWal(wallCount, _stageCount * STAGELENGTH);
             list = list.Concat(walls).ToList();
             _stageInstantiateObjects.Enqueue(list);
             _stageCount++;
@@ -65,8 +70,9 @@ namespace Stage
             var wallPosition = RandomInts(index);
             for (int i = 0; i < index; i++)
             {
-                Vector3 instantiatePosition = new Vector3(-2 + wallPosition[i] % 3 * 2, 1 + wallPosition[i] / 3 * 2,xLength);
-                list.Add(Instantiate(_wallObject, instantiatePosition, Quaternion.identity));
+                Vector3 instantiatePosition = new Vector3(-2 + wallPosition[i] % 3 * 2, 1 + wallPosition[i] / 3 * 2, xLength + 5);
+                GameObject InstanceObject = UnityEngine.Random.Range(0, 100) < 5 ? _ballObject : _wallObject;
+                list.Add(Instantiate(InstanceObject, instantiatePosition, Quaternion.identity));
             }
             return list;
         }

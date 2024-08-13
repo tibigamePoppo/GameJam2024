@@ -24,7 +24,7 @@ public class DamageBlock : MonoBehaviour, IDamagable
         _hp = _hp - damage;
         if (_hp <= 0)
         {
-            Destroy(gameObject, 0.2f);
+            Destroy(gameObject);
         }
     }
 }

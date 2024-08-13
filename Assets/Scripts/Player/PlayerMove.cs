@@ -13,7 +13,6 @@ namespace Player
 {
     public class PlayerMove : MonoBehaviour
     {
-        [SerializeField]
         private float _playerMoveSpeed;
         [SerializeField]
         private float _playerSlideSpeed;
@@ -25,6 +24,7 @@ namespace Player
         private Rigidbody _rigidbody;
         private PlayerState _playerState;
         private CancellationTokenSource _source;
+        private PlayerStatus _playerStatus;
 
         private bool UsedSecondJump = false;
 
@@ -39,14 +39,25 @@ namespace Player
             _characterController = GetComponent<CharacterController>();
             _rigidbody = GetComponent<Rigidbody>();
             _playerState = GetComponent<PlayerState>();
+            _playerStatus = GetComponent<PlayerStatus>();
             _source = new CancellationTokenSource();
 
-            _moveDirection.z = _playerMoveSpeed;
             _playerState.OnChangePlayerState
                 .Where(x => x != StateType.Idle)
                 .Subscribe(x => {
                     _isPlaying = true;
                 });
+            _playerStatus.OnChangeMoveSpeed
+                .Subscribe(x =>
+                {
+                    _playerMoveSpeed = x;
+                }).AddTo(this);
+            _playerStatus.OnChangeMoveSpeed
+                .First()
+                .Subscribe(x =>
+                {
+                    _moveDirection.z = _playerMoveSpeed;
+                }).AddTo(this);
 
             //ƒWƒƒƒ“ƒv‚Ìˆ—
             this.UpdateAsObservable()
@@ -89,7 +100,7 @@ namespace Player
                 .ThrottleFirst(TimeSpan.FromSeconds(1))
                 .Subscribe(_ =>
                 {
-                    _playerMoveSpeed += 0.1f;
+                    _playerStatus.AddSpeed(0.1f);
                     _moveDirection.z = _playerMoveSpeed;
                 }).AddTo(this);
         }
