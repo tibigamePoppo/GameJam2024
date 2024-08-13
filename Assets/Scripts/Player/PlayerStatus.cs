@@ -1,3 +1,4 @@
+using Audio;
 using Interface;
 using Player;
 using Singleton.Effect;
@@ -26,7 +27,12 @@ namespace Player
             //Debug.Log($"ダメージを受けた。現在体力は{_currentHp.Value}");
             if (_currentHp.Value <= 0)
             {
+                SEManager.Instance.ShotSE(SEType.Dead);
                 Debug.Log("DEAD");
+            }
+            else
+            {
+                SEManager.Instance.ShotSE(SEType.Damage);
             }
         }
         public void Heal(int healValue)

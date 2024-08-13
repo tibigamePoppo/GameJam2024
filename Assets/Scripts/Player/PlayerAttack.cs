@@ -7,6 +7,7 @@ using UniRx.Triggers;
 using Cysharp.Threading.Tasks;
 using Unity.Burst.CompilerServices;
 using System.Threading;
+using Audio;
 
 namespace Player
 {
