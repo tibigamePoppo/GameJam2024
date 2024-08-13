@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 using UniRx.Triggers;
+using Audio;
 
 namespace Player
 {
@@ -33,18 +34,21 @@ namespace Player
                 .Subscribe(_ =>
                 {
                     _animator.SetTrigger("Jump");
+                    SEManager.Instance.ShotSE(SEType.Jump);
                 }).AddTo(this);
             _playerState.OnChangePlayerState
                 .Where(x => x == StateType.SecondJump)
                 .Subscribe(_ =>
                 {
                     _animator.SetBool("SecondJump",true);
+                    SEManager.Instance.ShotSE(SEType.SecondJump);
                 }).AddTo(this);
             _playerState.OnChangePlayerState
                 .Where(x => x == StateType.Attack)
                 .Subscribe(_ =>
                 {
                     _animator.SetTrigger("Sword");
+                    SEManager.Instance.ShotSE(SEType.Attack);
                 }).AddTo(this);
             this.FixedUpdateAsObservable()
                 .Subscribe(_ =>
