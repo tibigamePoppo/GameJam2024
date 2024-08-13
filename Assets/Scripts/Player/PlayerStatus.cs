@@ -14,13 +14,19 @@ namespace Player
     {
         [SerializeField]
         private int _startHP;
+        [SerializeField]
+        private float _playerMoveSpeed = 5;
         private const int MAXHP = 18;
         private PlayerState _playerState;
         private ReactiveProperty<int> _currentHp = new ReactiveProperty<int>();
         public IObservable<int> OnChangeCurrentHp { get { return _currentHp; } }
+        private ReactiveProperty<float> _moveSpeed = new ReactiveProperty<float>();
+        public IObservable<float> OnChangeMoveSpeed{ get { return _moveSpeed; } }
+        public float GetMoveSpeed {  get { return _moveSpeed.Value; } }
         void Start()
         {
             _playerState = GetComponent<PlayerState>();
+            _moveSpeed.Value = _playerMoveSpeed;
             _currentHp.Value = _startHP;
         }
         public void Damage(int damage)
@@ -41,6 +47,10 @@ namespace Player
         {
             _currentHp.Value = _currentHp.Value + healValue < MAXHP ? _currentHp.Value + healValue : _currentHp.Value;
             //Debug.Log($"‰ñ•œ‚µ‚½IŒ»Ý‘Ì—Í‚Í{_currentHp.Value}");
+        }
+        public void AddSpeed(float add)
+        {
+            _moveSpeed.Value += add;
         }
     }
 }

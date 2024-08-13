@@ -1,4 +1,6 @@
+using Cysharp.Threading.Tasks.Triggers;
 using Interface;
+using Player;
 using Singleton.Effect;
 using System.Collections;
 using System.Collections.Generic;
@@ -34,7 +36,12 @@ public class Ball : MonoBehaviour
                 EffectEmiter.Instance.EmitEffect(EffectType.WallHit, other.ClosestPointOnBounds(this.transform.position));
             }
         }
+        else if (other.gameObject.CompareTag("Player"))
+        {
+            GetDamange(_hp);
+        }
     }
+    /*
 
     private void OnCollisionEnter(Collision collision)
     {
@@ -47,18 +54,14 @@ public class Ball : MonoBehaviour
             direction = rb.velocity;
 
         }
-        else if(collision.gameObject.CompareTag("Player"))
-        {
-            GetDamange(_hp);
-        }
-    }
+    }*/
     private void GetDamange(int damage)
     {
         _hp = _hp - damage  > 0 ? _hp - damage : 0;
         if(_hp <= 0)
         {
             EffectEmiter.Instance.EmitEffect(EffectType.HammerHit,transform.position);
-            Destroy(gameObject,0.2f);
+            Destroy(gameObject);
         }
     }
 }
