@@ -50,7 +50,7 @@ namespace Player
 
             //ジャンプの処理
             this.UpdateAsObservable()
-                .Where(_ => _isPlaying && _playerState.GetPlayerState != StateType.Attack)
+                .Where(_ => _isPlaying && _playerState.GetPlayerState != StateType.Attack && _isPlaying)
                 .Where(_ => Input.GetKeyDown(KeyCode.Space))
                 .ThrottleFirst(TimeSpan.FromSeconds(0.4))
                 .Subscribe(_ =>
@@ -77,6 +77,11 @@ namespace Player
                     GroundCheck(_source.Token);
                 });
 
+            _playerState.OnChangePlayerState
+                .Where(x => x == StateType.Dead)
+                .Subscribe(x => {
+                    _isPlaying = false;
+                });
             //キャラクターの加速
 
             this.UpdateAsObservable()

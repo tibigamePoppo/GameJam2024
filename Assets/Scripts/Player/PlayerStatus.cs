@@ -15,10 +15,12 @@ namespace Player
         [SerializeField]
         private int _startHP;
         private const int MAXHP = 18;
+        private PlayerState _playerState;
         private ReactiveProperty<int> _currentHp = new ReactiveProperty<int>();
         public IObservable<int> OnChangeCurrentHp { get { return _currentHp; } }
         void Start()
         {
+            _playerState = GetComponent<PlayerState>();
             _currentHp.Value = _startHP;
         }
         public void Damage(int damage)
@@ -27,8 +29,8 @@ namespace Player
             //Debug.Log($"ダメージを受けた。現在体力は{_currentHp.Value}");
             if (_currentHp.Value <= 0)
             {
-                SEManager.Instance.ShotSE(SEType.Dead);
                 Debug.Log("DEAD");
+                _playerState.ChangeState(StateType.Dead);
             }
             else
             {

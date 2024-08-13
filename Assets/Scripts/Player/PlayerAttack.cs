@@ -8,6 +8,7 @@ using Cysharp.Threading.Tasks;
 using Unity.Burst.CompilerServices;
 using System.Threading;
 using Audio;
+using static Unity.VisualScripting.Member;
 
 namespace Player
 {
@@ -39,6 +40,13 @@ namespace Player
                     }
 
                 }).AddTo(this);
+
+            _playerState.OnChangePlayerState
+                .Where(x => x == StateType.Dead)
+                .Subscribe(x => {
+                    _isPlaying = false;
+                });
+
             _playerState.OnChangePlayerState
                 .Where(x => x == StateType.Attack)
                 .Delay(TimeSpan.FromSeconds(0.65f))
