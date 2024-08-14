@@ -8,6 +8,7 @@ using System;
 using Cysharp.Threading.Tasks;
 using UnityEngine.SceneManagement;
 using DG.Tweening;
+using UnityEngine.UI;
 
 namespace Presenter
 {
@@ -22,20 +23,38 @@ namespace Presenter
         [SerializeField]
         private TextMeshProUGUI _retry;
         [SerializeField]
+        private GameObject _descriptionPanel;
+        [SerializeField]
+        private Image _descriptionButton;
+        [SerializeField]
         private GameObject[] Hps;
         IngameManager _ingameManager;
         PlayerStatus _playerStatus;
         void Start()
         {
             _tapToStart.DOFade(0, 0.8f).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo);
+            _descriptionButton.DOFade(0, 0.8f).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo);
             _ingameManager = FindAnyObjectByType<IngameManager>();
             _playerStatus = FindAnyObjectByType<PlayerStatus>();
-            _ingameManager.Score
+            _ingameManager.OnChangeIngameState
+                .Subscribe(x => 
+                {
+                    switch(x)
+                    {
+                        case IngameType.Ready:
+                            _descriptionPanel.SetActive(false);
+                            _descriptionButton.gameObject.SetActive(false);
+                            break;
+                        case IngameType.Ingame:
+                            _tapToStart.gameObject.SetActive(false);
+                            break;
+                    }
+                }).AddTo(this);
+
+           _ingameManager.Score
                 .Subscribe(x => _scoreText.text = $"SCORE : {x.ToString("f1")}").AddTo(this);
-            _ingameManager.OnChangeIngameState
-                .Where(state => state == IngameType.Ingame)
-                .Subscribe(x => _tapToStart.gameObject.SetActive(false)).AddTo(this);
-            _ingameManager.OnChangeIngameState
+
+           _ingameManager.OnChangeIngameState
                 .Where(state => state == IngameType.GameOver)
                 .Subscribe(x =>
                 {

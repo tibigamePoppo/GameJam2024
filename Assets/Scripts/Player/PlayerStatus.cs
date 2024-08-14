@@ -46,6 +46,7 @@ namespace Player
         public void Heal(int healValue)
         {
             _currentHp.Value = _currentHp.Value + healValue < MAXHP ? _currentHp.Value + healValue : _currentHp.Value;
+            SEManager.Instance.ShotSE(SEType.Get);
             //Debug.Log($"‰ñ•œ‚µ‚½IŒ»Ý‘Ì—Í‚Í{_currentHp.Value}");
         }
         public void AddSpeed(float add)
