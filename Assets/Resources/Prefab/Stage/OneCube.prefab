@@ -48,6 +48,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _damage: 1
+  _healOrb: {fileID: 2343751325545352728, guid: 5ed6adcb7399a5b4d938acee8a914545, type: 3}
   _hp: 1
 --- !u!33 &1139810241361402284
 MeshFilter:

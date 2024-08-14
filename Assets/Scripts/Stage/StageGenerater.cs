@@ -7,6 +7,7 @@ using UniRx;
 using System.Reflection;
 using UnityEngine.UIElements;
 using UniRx.Triggers;
+using Config;
 
 namespace Stage
 {
@@ -71,7 +72,7 @@ namespace Stage
             for (int i = 0; i < index; i++)
             {
                 Vector3 instantiatePosition = new Vector3(-2 + wallPosition[i] % 3 * 2, 1 + wallPosition[i] / 3 * 2, xLength + 5);
-                bool SpawnBall = UnityEngine.Random.Range(0, 100) < 5;
+                bool SpawnBall = UnityEngine.Random.Range(0, 100) < ConfigParameter.BallDropPersent;
                 if (SpawnBall)
                 {
                     Instantiate(_ballObject, instantiatePosition, Quaternion.identity);
