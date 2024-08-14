@@ -118,7 +118,7 @@ namespace Player
         }
         public void MoveDown()
         {
-            _moveDirection.y = _moveDirection.y > -1 ? -1 : _moveDirection.y;
+            _moveDirection.y = _moveDirection.y > -2 ? -2 : _moveDirection.y - 2;
         }
         private void Update()
         {
