@@ -9,12 +9,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1564564435173246465}
+  - component: {fileID: 8191846024652539703}
   - component: {fileID: 8056378825756318132}
   - component: {fileID: 2533227453035006105}
   - component: {fileID: 8517534732205627773}
   - component: {fileID: 1600709360230228337}
-  - component: {fileID: 8191846024652539703}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: HealOrb
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -37,6 +37,18 @@ Transform:
   - {fileID: 1452318920198905053}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8191846024652539703
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2343751325545352728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd08dd9f639d5a34182ff94a16e024ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!33 &8056378825756318132
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -135,18 +147,6 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &8191846024652539703
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2343751325545352728}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fd08dd9f639d5a34182ff94a16e024ba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &1436344032547908978
 PrefabInstance:
   m_ObjectHideFlags: 0

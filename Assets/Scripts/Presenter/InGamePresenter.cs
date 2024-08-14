@@ -47,7 +47,7 @@ namespace Presenter
                 .Delay(TimeSpan.FromSeconds(1f))
                 .Subscribe(x =>
                 {
-                    _gameOver.DOFade(0, 0.8f).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo);
+                    _retry.DOFade(0, 0.8f).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo);
                     _retry.gameObject.SetActive(true);
                     Retry().Forget();
                 }).AddTo(this);
