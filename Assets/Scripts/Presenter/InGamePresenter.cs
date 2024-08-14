@@ -7,6 +7,7 @@ using Player;
 using System;
 using Cysharp.Threading.Tasks;
 using UnityEngine.SceneManagement;
+using DG.Tweening;
 
 namespace Presenter
 {
@@ -26,6 +27,7 @@ namespace Presenter
         PlayerStatus _playerStatus;
         void Start()
         {
+            _tapToStart.DOFade(0, 0.8f).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo);
             _ingameManager = FindAnyObjectByType<IngameManager>();
             _playerStatus = FindAnyObjectByType<PlayerStatus>();
             _ingameManager.Score
@@ -45,22 +47,43 @@ namespace Presenter
                 .Delay(TimeSpan.FromSeconds(1f))
                 .Subscribe(x =>
                 {
+                    _gameOver.DOFade(0, 0.8f).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo);
                     _retry.gameObject.SetActive(true);
                     Retry().Forget();
                 }).AddTo(this);
+
+            //HPŠÖŒW
+            int _currentHp = _playerStatus.GetCurrentHp;
+            for (int i = 0; i < Hps.Length; i++)
+            {
+                if (i < _currentHp)
+                {
+                    Hps[i].SetActive(true);
+                }
+                else
+                {
+                    Hps[i].SetActive(false);
+                }
+            }
             _playerStatus.OnChangeCurrentHp
                 .Where(hp => hp >= 0)
+                .Skip(1)
                 .Subscribe(hp =>
                 {
-                    for (int i = 0; i < Hps.Length; i++)
+                    for (int j = 0; j < Hps.Length; j++)
                     {
-                        if(i < hp)
+                        var targetObject = Hps[j];
+                        if(j < hp)
                         {
-                            Hps[i].SetActive(true);
+                            targetObject.SetActive(true);
+                            if(j == hp - 1)
+                            {
+                                targetObject.transform.DOScale(Vector3.one, 0.5f).From(Vector3.zero).SetEase(Ease.OutBounce);
+                            }
                         }
                         else
                         {
-                            Hps[i].SetActive(false);
+                            targetObject.transform.DOShakePosition(0.5f,strength:5).OnComplete(() => targetObject.SetActive(false));
                         }
                     }
                 }).AddTo(this);

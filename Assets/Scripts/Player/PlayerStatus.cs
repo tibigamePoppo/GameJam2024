@@ -20,6 +20,7 @@ namespace Player
         private PlayerState _playerState;
         private ReactiveProperty<int> _currentHp = new ReactiveProperty<int>();
         public IObservable<int> OnChangeCurrentHp { get { return _currentHp; } }
+        public int GetCurrentHp { get { return _currentHp.Value; } }
         private ReactiveProperty<float> _moveSpeed = new ReactiveProperty<float>();
         public IObservable<float> OnChangeMoveSpeed{ get { return _moveSpeed; } }
         public float GetMoveSpeed {  get { return _moveSpeed.Value; } }
