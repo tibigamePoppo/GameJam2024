@@ -36,7 +36,6 @@ namespace Player
             //Debug.Log($"ダメージを受けた。現在体力は{_currentHp.Value}");
             if (_currentHp.Value <= 0)
             {
-                Debug.Log("DEAD");
                 _playerState.ChangeState(StateType.Dead);
             }
             else

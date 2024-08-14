@@ -18,7 +18,7 @@ namespace Player
         private GameObject _boxcollderPosition;
         private PlayerState _playerState;
         private PlayerStatus _playerStatus;
-        private Vector3 halfExtents = new Vector3(0.8f, 0.8f, 1f); // 各軸についてのボックスサイズの半分
+        private Vector3 halfExtents = new Vector3(0.8f, 0.8f, 0.8f); // 各軸についてのボックスサイズの半分
 
         private bool _isPlaying;
         void Start()

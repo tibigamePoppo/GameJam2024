@@ -17,6 +17,7 @@ public class Ball : MonoBehaviour
     [SerializeField]
     private int _hp = 3;
     private List<GameObject> damaged = new List<GameObject>();
+    private GameObject _lastReflectObject = null;
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -24,21 +25,44 @@ public class Ball : MonoBehaviour
     private void Update()
     {
         direction = rb.velocity;
-    }
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.gameObject.CompareTag("Stage"))
+        var hits = Physics.SphereCastAll
+        (
+            origin: transform.position,
+            radius: 0.6f,
+            direction: transform.forward,
+            maxDistance: 2,
+            layerMask: LayerMask.GetMask("Jumpable","Wall","StageOut")
+        );
+        if (hits.Length > 0)
         {
-            normal = GetNormal(other.gameObject);
+            foreach (var hit in hits)
+            {
+                if (hit.collider.gameObject.layer.Equals(9))
+                {
+                    GetDamange(_hp);
+                }
+                else if(hit.collider.gameObject != _lastReflectObject)
+                {
+                    Reflect(hit.collider.gameObject);
+                    _lastReflectObject = hit.collider.gameObject;
+                }
+            }
+        }
+    }
+    private void Reflect(GameObject other)
+    {
+        if (other.CompareTag("Stage"))
+        {
+            normal = GetNormal(other,other.layer.Equals(6));
             Vector3 result = Vector3.Reflect(direction, normal);
             rb.velocity = result;
-            direction = rb.velocity;
-            if (damaged.Contains(other.gameObject)) return;
-            if (other.gameObject.TryGetComponent(out IDamagable damagable))
+            direction = result;
+            if (damaged.Contains(other)) return;
+            if (other.TryGetComponent(out IDamagable damagable))
             {
                 GetDamange(1);
                 damagable.Damage(1);
-                EffectEmiter.Instance.EmitEffect(EffectType.WallHit, other.ClosestPointOnBounds(this.transform.position));
+                EffectEmiter.Instance.EmitEffect(EffectType.WallHit, other.transform.position);
                 damaged.Add(other.gameObject);
             }
         }
@@ -47,41 +71,32 @@ public class Ball : MonoBehaviour
             GetDamange(_hp);
         }
     }
-    private Vector3 GetNormal(GameObject target)
+    private Vector3 GetNormal(GameObject target,bool edge)
     {
         var diffPosition = target.transform.position - transform.position;
-        var diffSize = (target.transform.localScale) / 2;
+        var diffSize = target.transform.localScale / 2;
         //Debug.Log($"diffPosition {diffPosition} : diffSize {diffSize} : target {target.name}");
-
-
-        if(diffSize.x < diffPosition.x)
+        float xVector = Mathf.Abs(diffPosition.x / diffSize.x);
+        float yVector = Mathf.Abs(diffPosition.y / diffSize.y);
+        float zVector = Mathf.Abs(diffPosition.z / diffSize.z);
+        Vector3 normalVector = Vector3.zero;
+        float maxVector = Mathf.Max(xVector, yVector, zVector);
+        float effectiveVector = edge ? maxVector * 0.75f: maxVector;//有効な成分
+        //Debug.Log($"target = {target.name}, diffPosition = {diffPosition},diffSize = {diffSize}, xVector = {xVector}, yVector = {yVector}, zVector = {zVector}");
+        if (effectiveVector <= yVector)  //y成分が一番大きい
         {
-            return Vector3.left;
+            normalVector += diffPosition.y > 0? -Vector3.up : Vector3.up;
         }
-        else if(-diffSize.x > diffPosition.x)
+        if (effectiveVector <= zVector)  //z成分が一番大きい
         {
-            return -Vector3.left;
+            normalVector += diffPosition.z > 0 ? -Vector3.forward : Vector3.forward;
         }
-        else if (diffSize.y < diffPosition.y)
+        if (effectiveVector <= xVector)  //x 成分が一番大きい
         {
-            return -Vector3.up;
+            normalVector += diffPosition.x > 0 ? Vector3.left : -Vector3.left;
         }
-        else if (-diffSize.y > diffPosition.y)
-        {
-            return Vector3.up;
-        }
-        else if (diffSize.z < diffPosition.z)
-        {
-            return -Vector3.forward;
-        }
-        else if (-diffSize.z > diffPosition.z)
-        {
-            return Vector3.forward;
-        }
-        else
-        {
-            return Vector3.zero;
-        }
+        normalVector = normalVector.normalized;
+        return normalVector;
     }
     private void GetDamange(int damage)
     {
@@ -91,5 +106,11 @@ public class Ball : MonoBehaviour
             EffectEmiter.Instance.EmitEffect(EffectType.HammerHit,transform.position);
             Destroy(gameObject);
         }
+    }
+    void OnDrawGizmos()
+    {
+        //　Capsuleのレイを疑似的に視覚化
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position + Vector3.zero, 0.6f);
     }
 }

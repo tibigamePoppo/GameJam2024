@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1139810241361402284}
   - component: {fileID: 6280541935345875933}
   - component: {fileID: 5310539397143731282}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: OneCube
   m_TagString: Stage
   m_Icon: {fileID: 0}
