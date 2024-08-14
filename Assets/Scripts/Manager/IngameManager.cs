@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
+using unityroom.Api;
 namespace Manager
 {
     public enum IngameType
@@ -38,6 +39,13 @@ namespace Manager
                     {
                         ChangeState(IngameType.Ingame);
                     }
+                }).AddTo(this);
+            OnChangeIngameState
+                .Where(x => x == IngameType.GameOver)
+                .First()
+                .Subscribe(_ =>
+                {
+                    UnityroomApiClient.Instance.SendScore(1, 123.45f, ScoreboardWriteMode.Always);
                 }).AddTo(this);
             this.UpdateAsObservable()
                 .Where(_ => Input.anyKey)
