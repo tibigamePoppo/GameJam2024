@@ -36,12 +36,25 @@ namespace Player
                 .Where(_ => Input.GetKey(KeyCode.W))
                 .Subscribe(_ =>
                 {
-                    if (_playerState.GetPlayerState != StateType.Attack)
+                    if (_playerState.GetPlayerState != StateType.Attack && _playerState.GetPlayerState != StateType.DownAttack)
                     {
                         _playerState.ChangeState(StateType.Attack);
                         AttackAsync().Forget();
                     }
 
+                }).AddTo(this);
+
+            this.UpdateAsObservable()
+                .Where(_ => _isPlaying)
+                .Where(_ => Input.GetKey(KeyCode.S))
+                .Where(_ => _playerState.GetPlayerState != StateType.Attack
+                            && _playerState.GetPlayerState != StateType.DownAttack
+                            && (_playerState.GetPlayerState == StateType.Jump
+                            || _playerState.GetPlayerState == StateType.SecondJump))
+                .Subscribe(_ =>
+                {
+                    _playerState.ChangeState(StateType.DownAttack);
+                    AttackAsync().Forget();
                 }).AddTo(this);
 
             _playerState.OnChangePlayerState

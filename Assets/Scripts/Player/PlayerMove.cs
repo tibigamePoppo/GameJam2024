@@ -59,6 +59,18 @@ namespace Player
                     _moveDirection.z = _playerMoveSpeed;
                 }).AddTo(this);
 
+            _playerState.OnChangePlayerState
+                .Where(x => x == StateType.DownAttack)
+                .Subscribe(x => {
+                    MoveDown();
+                });
+
+            _playerState.OnChangePlayerState
+                .Where(x => x == StateType.Attack)
+                .Subscribe(x => {
+                    _moveDirection.y = _moveDirection.y < 1 ? _moveDirection.y + 1: _moveDirection.y;
+                });
+
             //ƒWƒƒƒ“ƒv‚Ìˆ—
             this.UpdateAsObservable()
                 .Where(_ => _isPlaying && _playerState.GetPlayerState != StateType.Attack && _isPlaying)
@@ -104,6 +116,10 @@ namespace Player
                     _moveDirection.z = _playerMoveSpeed;
                 }).AddTo(this);
         }
+        public void MoveDown()
+        {
+            _moveDirection.y = _moveDirection.y > -1 ? -1 : _moveDirection.y;
+        }
         private void Update()
         {
             if (!_isPlaying) return;
@@ -124,7 +140,7 @@ namespace Player
         private async UniTask GroundCheck(CancellationToken token)
         {
             await UniTask.WaitUntil(() => isGrounded(), cancellationToken : token);
-            if (_playerState.GetPlayerState == StateType.Jump || _playerState.GetPlayerState == StateType.SecondJump)
+            if (_playerState.GetPlayerState == StateType.Jump || _playerState.GetPlayerState == StateType.SecondJump || _playerState.GetPlayerState == StateType.DownAttack)
             {
                 _playerState.ChangeState(StateType.Dash);
             }

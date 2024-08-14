@@ -28,6 +28,7 @@ namespace Player
                 .Subscribe(_ =>
                 {
                     _animator.SetBool("SecondJump", false);
+                    _animator.SetBool("DownSword", false);
                 }).AddTo(this);
             _playerState.OnChangePlayerState
                 .Where(x => x == StateType.Jump)
@@ -48,6 +49,13 @@ namespace Player
                 .Subscribe(_ =>
                 {
                     _animator.SetTrigger("Sword");
+                    SEManager.Instance.ShotSE(SEType.Attack);
+                }).AddTo(this);
+            _playerState.OnChangePlayerState
+                .Where(x => x == StateType.DownAttack)
+                .Subscribe(_ =>
+                {
+                    _animator.SetBool("DownSword", true);
                     SEManager.Instance.ShotSE(SEType.Attack);
                 }).AddTo(this);
             _playerState.OnChangePlayerState
