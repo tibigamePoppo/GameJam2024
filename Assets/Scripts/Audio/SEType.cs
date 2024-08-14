@@ -11,6 +11,10 @@ public enum SEType
     Dead,
     Dead1,
     Dead2,
+    Get,
+    Get1,
+    Get2,
+    Get3,
     Jump,
     SecondJump,
 }

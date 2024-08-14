@@ -76,6 +76,23 @@ namespace Audio
                         break;
                 }
             }
+            else if (type == SEType.Get)
+            {
+                switch (Random.Range(0, 3))
+                {
+                    case 0:
+                        type = SEType.Get1;
+                        break;
+                    case 1:
+                        type = SEType.Get2;
+                        break;
+                    case 2:
+                        type = SEType.Get3;
+                        break;
+                    default:
+                        break;
+                }
+            }
             var se = seList.First(e => e.name.Equals(type.ToString()));
             _audioSource.PlayOneShot(se);
         }

@@ -10,6 +10,7 @@ namespace Manager
 {
     public enum IngameType
     {
+        OutGame,
         Ready,
         Ingame,
         Pause,
@@ -26,6 +27,7 @@ namespace Manager
 
         void Start()
         {
+            /*
             this.FixedUpdateAsObservable()
                 .Where(_ => Input.GetKey(KeyCode.Escape))
                 .Subscribe(_ =>
@@ -40,6 +42,7 @@ namespace Manager
                         ChangeState(IngameType.Ingame);
                     }
                 }).AddTo(this);
+            */
             OnChangeIngameState
                 .Where(x => x == IngameType.GameOver)
                 .First()
@@ -48,10 +51,14 @@ namespace Manager
                     UnityroomApiClient.Instance.SendScore(1, 123.45f, ScoreboardWriteMode.Always);
                 }).AddTo(this);
             this.UpdateAsObservable()
-                .Where(_ => Input.anyKey)
+                .Where(_ => Input.GetKeyUp(KeyCode.Space) && _state.Value == IngameType.OutGame)
+                .First()
+                .Subscribe(_ => ChangeState(IngameType.Ready)).AddTo(this);
+            this.UpdateAsObservable()
+                .Where(_ => Input.anyKeyDown && _state.Value == IngameType.Ready)
                 .First()
                 .Subscribe(_ => ChangeState(IngameType.Ingame)).AddTo(this);
-            ChangeState(IngameType.Ready);
+            ChangeState(IngameType.OutGame);
         }
 
         public void ChangeState(IngameType state)
