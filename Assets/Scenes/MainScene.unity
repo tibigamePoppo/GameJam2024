@@ -1624,6 +1624,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: HealOrb
       objectReference: {fileID: 0}
+    - target: {fileID: 2343751325545352728, guid: 5ed6adcb7399a5b4d938acee8a914545, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
