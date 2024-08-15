@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 using System;
@@ -22,7 +20,7 @@ namespace Player
     {
         ReactiveProperty<StateType> _state = new ReactiveProperty<StateType>();
         public IObservable<StateType> OnChangePlayerState { get { return _state; } }//_health(体力)が変化した際にイベントが発行
-        public StateType GetPlayerState {  get { return _state.Value; } }
+        public StateType GetPlayerState { get { return _state.Value; } }
 
         private void Start()
         {
@@ -31,21 +29,17 @@ namespace Player
                 .Where(x => x == IngameType.Ingame)
                 .Subscribe(_ => ChangeState(StateType.Dash)).AddTo(this);
             OnChangePlayerState
-                .Where (x => x == StateType.Dead)
-                .Subscribe(_ => {
+                .Where(x => x == StateType.Dead)
+                .Subscribe(_ =>
+                {
                     Manager.ChangeState(IngameType.GameOver);
                 }).AddTo(this);
         }
 
         public void ChangeState(StateType state)
         {
-            if (_state.Value == StateType.Dead) return;
-            //Debug.Log($"changeState {state}");
+            if (_state.Value == StateType.Dead) return;//死亡時はすべての遷移をキャンセル
             _state.Value = state;
-        }
-        private void Update()
-        {
-            //Debug.Log($"CurrentState is {GetPlayerState}");
         }
     }
 }

@@ -1,15 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 using System;
 using UniRx.Triggers;
 using Cysharp.Threading.Tasks;
-using Unity.Burst.CompilerServices;
-using System.Threading;
-using Audio;
-using static Unity.VisualScripting.Member;
-using System.Runtime.CompilerServices;
 
 namespace Player
 {
@@ -43,7 +36,7 @@ namespace Player
                 .ThrottleFirst(TimeSpan.FromSeconds(0.4))
                 .Subscribe(_ =>
                 {
-                    if(_playerState.GetPlayerState == StateType.Attack)
+                    if (_playerState.GetPlayerState == StateType.Attack)
                     {
                         halfExtents = wideAttackSize;
                         _playerState.ChangeState(StateType.WideAttack);
@@ -73,7 +66,8 @@ namespace Player
 
             _playerState.OnChangePlayerState
                 .Where(x => x == StateType.Dead)
-                .Subscribe(x => {
+                .Subscribe(x =>
+                {
                     _isPlaying = false;
                 });
 
@@ -82,7 +76,7 @@ namespace Player
                 .Delay(TimeSpan.FromSeconds(0.65f))
                 .Subscribe(x =>
                 {
-                    if(_playerState.GetPlayerState != StateType.WideAttack)
+                    if (_playerState.GetPlayerState != StateType.WideAttack)
                     {
                         _playerState.ChangeState(StateType.Dash);
                     }
@@ -117,7 +111,7 @@ namespace Player
                 {
                     if (hit.collider.gameObject.TryGetComponent(out Rigidbody rigidbody))
                     {
-                        Vector3 shotDirection =  hit.transform.position -transform.position - new Vector3(0, 1.5f, -5);
+                        Vector3 shotDirection = hit.transform.position - transform.position - new Vector3(0, 1.5f, -5);
                         shotDirection.y = Math.Abs(shotDirection.y);
                         shotDirection = Vector3.Normalize(shotDirection);
                         rigidbody.velocity = Vector3.zero;
@@ -132,6 +126,7 @@ namespace Player
             gizmoExtents = Vector3.zero;
             _isAttacking = false;
         }
+#if UNITY_EDITOR
         void OnDrawGizmos()
         {
             var center = _boxcollderPosition.transform.position;
@@ -139,5 +134,5 @@ namespace Player
             Gizmos.DrawWireCube(center, gizmoExtents * 2);
         }
     }
-
+#endif
 }

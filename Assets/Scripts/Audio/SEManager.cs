@@ -1,5 +1,3 @@
-using Singleton.Effect;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -28,7 +26,7 @@ namespace Audio
         }
         public void ShotSE(SEType type)
         {
-            if(type == SEType.Attack)
+            if (type == SEType.Attack)
             {
                 switch (Random.Range(0, 3))
                 {

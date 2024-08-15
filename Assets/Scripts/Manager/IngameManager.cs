@@ -1,7 +1,4 @@
-using Player;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
@@ -27,22 +24,6 @@ namespace Manager
 
         void Start()
         {
-            /*
-            this.FixedUpdateAsObservable()
-                .Where(_ => Input.GetKey(KeyCode.Escape))
-                .Subscribe(_ =>
-                {
-                    if(_state.Value == IngameType.Ingame)
-                    {
-                        ChangeState(IngameType.Pause);
-                    }
-                    else
-                    if (_state.Value == IngameType.Pause)
-                    {
-                        ChangeState(IngameType.Ingame);
-                    }
-                }).AddTo(this);
-            */
             OnChangeIngameState
                 .Where(x => x == IngameType.GameOver)
                 .First()

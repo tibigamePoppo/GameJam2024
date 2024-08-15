@@ -1,13 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 using UniRx.Triggers;
 using System;
 using Cysharp.Threading.Tasks;
 using System.Threading;
-using static Unity.VisualScripting.Member;
-using Audio;
 
 namespace Player
 {
@@ -44,7 +40,8 @@ namespace Player
 
             _playerState.OnChangePlayerState
                 .Where(x => x != StateType.Idle)
-                .Subscribe(x => {
+                .Subscribe(x =>
+                {
                     _isPlaying = true;
                 });
             _playerStatus.OnChangeMoveSpeed
@@ -60,8 +57,9 @@ namespace Player
                 }).AddTo(this);
 
             _playerState.OnChangePlayerState
-                .Subscribe(x => {
-                    switch(x)
+                .Subscribe(x =>
+                {
+                    switch (x)
                     {
                         case StateType.Attack:
                             _moveDirection.y = _moveDirection.y < 1 ? _moveDirection.y + 1 : _moveDirection.y;
@@ -70,7 +68,7 @@ namespace Player
                             _moveDirection.y = _moveDirection.y > -3 ? -3 : _moveDirection.y - 3;
                             break;
                         case StateType.WideAttack:
-                            _moveDirection.y = _moveDirection.y > -1 ? _moveDirection.y  : -0.5f;
+                            _moveDirection.y = _moveDirection.y > -1 ? _moveDirection.y : -0.5f;
                             break;
                     }
                 });
@@ -78,8 +76,8 @@ namespace Player
 
             //ジャンプの処理
             this.UpdateAsObservable()
-                .Where(_ => _isPlaying 
-                            && ( _playerState.GetPlayerState != StateType.Dash
+                .Where(_ => _isPlaying
+                            && (_playerState.GetPlayerState != StateType.Dash
                             || _playerState.GetPlayerState != StateType.Jump))
                 .Where(_ => Input.GetKeyDown(KeyCode.Space))
                 .ThrottleFirst(TimeSpan.FromSeconds(0.4))
@@ -103,13 +101,15 @@ namespace Player
             _playerState.OnChangePlayerState
                 .Where(x => x == StateType.Jump)
                 .Delay(TimeSpan.FromSeconds(0.5f))
-                .Subscribe(x => {
+                .Subscribe(x =>
+                {
                     GroundCheck(_source.Token);
                 });
 
             _playerState.OnChangePlayerState
                 .Where(x => x == StateType.Dead)
-                .Subscribe(x => {
+                .Subscribe(x =>
+                {
                     _isPlaying = false;
                 });
             //キャラクターの加速
@@ -145,7 +145,7 @@ namespace Player
         }
         private async UniTask GroundCheck(CancellationToken token)
         {
-            await UniTask.WaitUntil(() => isGrounded(), cancellationToken : token);
+            await UniTask.WaitUntil(() => isGrounded(), cancellationToken: token);
             if (_playerState.GetPlayerState == StateType.Jump || _playerState.GetPlayerState == StateType.SecondJump || _playerState.GetPlayerState == StateType.DownAttack)
             {
                 _playerState.ChangeState(StateType.Dash);
