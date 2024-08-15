@@ -1,6 +1,8 @@
 using Interface;
+using Manager;
 using Singleton.Effect;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Stage
@@ -12,11 +14,16 @@ namespace Stage
         private Vector3 normal;
         private Rigidbody rb;
         [SerializeField]
-        private int _hp = 3;
+        private int _startHp = 3;
+        private int _hp;
+        private int _bound = 0;
         private List<GameObject> damaged = new List<GameObject>();
         private GameObject _lastReflectObject = null;
+        private IngameManager _ingameManager;
         void Start()
         {
+            _hp = _startHp;
+            _ingameManager = FindObjectOfType<IngameManager>();
             rb = GetComponent<Rigidbody>();
         }
         private void Update()
@@ -104,11 +111,19 @@ namespace Stage
                 Destroy(gameObject);
             }
         }
+        public void PlayerBound()
+        {
+            _ingameManager.AddScore(100 * _bound);
+            _hp = _startHp;
+        }
+
+        /*
         void OnDrawGizmos()
         {
             //　Capsuleのレイを疑似的に視覚化
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(transform.position + Vector3.zero, 0.6f);
         }
+        */
     }
 }
