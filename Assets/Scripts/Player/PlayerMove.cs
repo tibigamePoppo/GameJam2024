@@ -27,6 +27,7 @@ namespace Player
         private bool _isPlaying;
         Vector3 _moveDirection = Vector3.zero;
         int _sideDirection = 0;
+        float time = 0;
 
         public float PlayerMoveSpeed { get => _playerMoveSpeed; }
 
@@ -91,8 +92,9 @@ namespace Player
                     }
                     else if (_playerState.GetPlayerState == StateType.Jump && !isGrounded())
                     {
+                        time = 1;
                         _playerState.ChangeState(StateType.SecondJump);
-                        _moveDirection.y = _playerJumpPower;
+                        _moveDirection.y = _moveDirection.y > _playerJumpPower / 2 ? _moveDirection.y + _playerJumpPower / 2 : _playerJumpPower;
                         _characterController.Move(_moveDirection * Time.deltaTime);
                     }
                 }).AddTo(this);
@@ -136,9 +138,18 @@ namespace Player
             {
                 _moveDirection.x += _playerSlideSpeed;
             }
-            if (_playerState.GetPlayerState != StateType.WideAttack)
+            if(!isGrounded())
             {
-                _moveDirection.y += Physics.gravity.y * Time.deltaTime;
+                time += Time.deltaTime * 4;
+            }
+            if (_playerState.GetPlayerState != StateType.WideAttack && _moveDirection.y > 0)
+            {
+                _moveDirection.y += Physics.gravity.y * Time.deltaTime * time;
+                if(_moveDirection.y < 0) time = 1;
+            }
+            else if(_playerState.GetPlayerState != StateType.WideAttack)
+            {
+                _moveDirection.y += Physics.gravity.y * Time.deltaTime * time;
             }
 
             _characterController.Move(_moveDirection * Time.deltaTime);
@@ -146,6 +157,7 @@ namespace Player
         private async UniTask GroundCheck(CancellationToken token)
         {
             await UniTask.WaitUntil(() => isGrounded(), cancellationToken: token);
+            time = 1;
             if (_playerState.GetPlayerState == StateType.Jump || _playerState.GetPlayerState == StateType.SecondJump || _playerState.GetPlayerState == StateType.DownAttack)
             {
                 _playerState.ChangeState(StateType.Dash);

@@ -7,5 +7,6 @@ namespace Config
         public static int BallDropPersent = 5;
         public static int HealDropPerennt = 10;
         public static int BallDropPersentByBlock = 10;
+        public static float globalSpeed = 1;
     }
 }

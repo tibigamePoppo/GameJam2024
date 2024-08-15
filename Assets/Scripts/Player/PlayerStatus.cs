@@ -19,6 +19,9 @@ namespace Player
         private ReactiveProperty<float> _moveSpeed = new ReactiveProperty<float>();
         public IObservable<int> OnChangeCurrentHp { get { return _currentHp; } }
         public IObservable<float> OnChangeMoveSpeed { get { return _moveSpeed; } }
+        public Subject<Unit> DamageEvent = new Subject<Unit>();
+        public IObservable<Unit> OnDamage { get { return DamageEvent; } }
+
         public int GetCurrentHp { get { return _currentHp.Value; } }
         public float GetMoveSpeed { get { return _moveSpeed.Value; } }
         private bool _isArmor = false;
@@ -34,10 +37,12 @@ namespace Player
             _currentHp.Value = damage > 0 ? _currentHp.Value - damage : 0;
             if (_currentHp.Value <= 0)
             {
+                DamageEvent.OnNext(default);
                 _playerState.ChangeState(StateType.Dead);
             }
             else
             {
+                DamageEvent.OnNext(default);
                 SEManager.Instance.ShotSE(SEType.Damage);
             }
             Armor().Forget();

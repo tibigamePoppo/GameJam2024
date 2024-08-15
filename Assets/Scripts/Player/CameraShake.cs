@@ -12,7 +12,7 @@ namespace Player
         void Start()
         {
             _status = GetComponent<PlayerStatus>();
-            _status.OnChangeCurrentHp
+            _status.OnDamage
                 .Subscribe(_ => _camera.transform.DOShakePosition(0.5f, 0.5f));
 
         }
