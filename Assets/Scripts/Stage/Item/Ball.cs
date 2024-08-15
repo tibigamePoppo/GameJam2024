@@ -114,6 +114,7 @@ namespace Stage
         public void PlayerBound()
         {
             _ingameManager.AddScore(100 * _bound);
+            _bound++;
             _hp = _startHp;
         }
 
