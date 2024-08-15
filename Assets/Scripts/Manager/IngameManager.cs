@@ -48,7 +48,7 @@ namespace Manager
                 .First()
                 .Subscribe(_ =>
                 {
-                    UnityroomApiClient.Instance.SendScore(1, 123.45f, ScoreboardWriteMode.Always);
+                    UnityroomApiClient.Instance.SendScore(1, _score.Value, ScoreboardWriteMode.Always);
                 }).AddTo(this);
             this.UpdateAsObservable()
                 .Where(_ => Input.GetKeyUp(KeyCode.Space) && _state.Value == IngameType.OutGame)

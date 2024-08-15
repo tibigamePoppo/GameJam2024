@@ -37,40 +37,55 @@ namespace Presenter
             _ingameManager = FindAnyObjectByType<IngameManager>();
             _playerStatus = FindAnyObjectByType<PlayerStatus>();
             _ingameManager.OnChangeIngameState
-                .Subscribe(x => 
+                .Subscribe(x =>
                 {
-                    switch(x)
-                    {
-                        case IngameType.Ready:
-                            _descriptionPanel.SetActive(false);
+                switch (x)
+                {
+                    case IngameType.Ready:
+                        _descriptionPanel.SetActive(false);
+                        _tapToStart.DOFade(1, 0.5f).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo).From(0);
+                            DOTween.Sequence()
+                                .AppendCallback(() =>
+                                {
+                                    _tapToStart.text = "3";
+                                })
+                                .AppendInterval(1)
+                                .AppendCallback(() =>
+                                {
+                                    _tapToStart.text = "2";
+                                })
+                                .AppendInterval(1)
+                                .AppendCallback(() =>
+                                {
+                                    _tapToStart.text = "1";
+                                })
+                                .AppendInterval(1)
+                                .AppendCallback(() =>
+                                {
+                                    _ingameManager.ChangeState(IngameType.Ingame);
+                                });
                             _descriptionButton.gameObject.SetActive(false);
                             break;
                         case IngameType.Ingame:
                             _tapToStart.gameObject.SetActive(false);
+                            break;
+                        case IngameType.GameOver:
+                            _gameOver.gameObject.SetActive(true);
+                            _gameOver.text = $"GAME OVER\nSOCRE : {_ingameManager.GetScore.ToString("f1")}";
+                            DOTween.Sequence()
+                                .AppendCallback(() =>
+                                {
+                                    _retry.gameObject.SetActive(true);
+                                    Retry().Forget();
+                                })
+                                .Append(_retry.DOFade(0, 0.8f).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo))
+                                .SetDelay(1);
                             break;
                     }
                 }).AddTo(this);
 
            _ingameManager.Score
                 .Subscribe(x => _scoreText.text = $"SCORE : {x.ToString("f1")}").AddTo(this);
-
-           _ingameManager.OnChangeIngameState
-                .Where(state => state == IngameType.GameOver)
-                .Subscribe(x =>
-                {
-                    _gameOver.gameObject.SetActive(true);
-                    _gameOver.text = $"GAME OVER\nSOCRE : {_ingameManager.GetScore.ToString("f1")}";
-                }).AddTo(this);
-            _ingameManager.OnChangeIngameState
-                .Where(state => state == IngameType.GameOver)
-                .Delay(TimeSpan.FromSeconds(1f))
-                .Subscribe(x =>
-                {
-                    _retry.DOFade(0, 0.8f).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo);
-                    _retry.gameObject.SetActive(true);
-                    Retry().Forget();
-                }).AddTo(this);
-
             //HPŠÖŒW
             int _currentHp = _playerStatus.GetCurrentHp;
             for (int i = 0; i < Hps.Length; i++)
