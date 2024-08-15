@@ -9,6 +9,7 @@ using Unity.Burst.CompilerServices;
 using System.Threading;
 using Audio;
 using static Unity.VisualScripting.Member;
+using System.Runtime.CompilerServices;
 
 namespace Player
 {
@@ -18,7 +19,12 @@ namespace Player
         private GameObject _boxcollderPosition;
         private PlayerState _playerState;
         private PlayerStatus _playerStatus;
+        private Vector3 normalAttackSize = new Vector3(0.8f, 0.8f, 0.8f); // 通常攻撃の当たり判定の大きさ
+        private Vector3 jumpAttackSize = new Vector3(0.6f, 1.2f, 0.8f); // 空中攻撃の当たり判定の大きさ
+        private Vector3 wideAttackSize = new Vector3(1.2f, 0.6f, 0.8f); // 範囲攻撃の当たり判定の大きさ
         private Vector3 halfExtents = new Vector3(0.8f, 0.8f, 0.8f); // 各軸についてのボックスサイズの半分
+        private Vector3 gizmoExtents = new Vector3(0.8f, 0.8f, 0.8f); // 各軸についてのボックスサイズの半分
+        private bool _isAttacking = false;
 
         private bool _isPlaying;
         void Start()
@@ -34,10 +40,20 @@ namespace Player
             this.UpdateAsObservable()
                 .Where(_ => _isPlaying)
                 .Where(_ => Input.GetKey(KeyCode.W))
+                .ThrottleFirst(TimeSpan.FromSeconds(0.4))
                 .Subscribe(_ =>
                 {
-                    if (_playerState.GetPlayerState != StateType.Attack && _playerState.GetPlayerState != StateType.DownAttack)
+                    if(_playerState.GetPlayerState == StateType.Attack)
                     {
+                        halfExtents = wideAttackSize;
+                        _playerState.ChangeState(StateType.WideAttack);
+                        AttackAsync().Forget();
+                    }
+                    else if (_playerState.GetPlayerState != StateType.WideAttack
+                    && _playerState.GetPlayerState != StateType.DownAttack
+                    && !_isAttacking)
+                    {
+                        halfExtents = normalAttackSize;
                         _playerState.ChangeState(StateType.Attack);
                         AttackAsync().Forget();
                     }
@@ -47,12 +63,10 @@ namespace Player
             this.UpdateAsObservable()
                 .Where(_ => _isPlaying)
                 .Where(_ => Input.GetKey(KeyCode.S))
-                .Where(_ => _playerState.GetPlayerState != StateType.Attack
-                            && _playerState.GetPlayerState != StateType.DownAttack
-                            && (_playerState.GetPlayerState == StateType.Jump
-                            || _playerState.GetPlayerState == StateType.SecondJump))
+                .Where(_ => _playerState.GetPlayerState == StateType.Jump || _playerState.GetPlayerState == StateType.SecondJump)
                 .Subscribe(_ =>
                 {
+                    halfExtents = jumpAttackSize;
                     _playerState.ChangeState(StateType.DownAttack);
                     AttackAsync().Forget();
                 }).AddTo(this);
@@ -66,15 +80,27 @@ namespace Player
             _playerState.OnChangePlayerState
                 .Where(x => x == StateType.Attack)
                 .Delay(TimeSpan.FromSeconds(0.65f))
-                .Subscribe(_ =>
+                .Subscribe(x =>
+                {
+                    if(_playerState.GetPlayerState != StateType.WideAttack)
+                    {
+                        _playerState.ChangeState(StateType.Dash);
+                    }
+                });
+            _playerState.OnChangePlayerState
+                .Where(x => x == StateType.WideAttack)
+                .Delay(TimeSpan.FromSeconds(0.8f))
+                .Subscribe(x =>
                 {
                     _playerState.ChangeState(StateType.Dash);
                 });
         }
         private async UniTaskVoid AttackAsync()
         {
+            _isAttacking = true;
             var elapsedTime = 0.0f;
             var findAttack = false;
+            gizmoExtents = halfExtents;
             while (1.5f > elapsedTime)
             {
                 var center = _boxcollderPosition.transform.position;
@@ -103,12 +129,14 @@ namespace Player
                 elapsedTime += Time.deltaTime;
                 await UniTask.Yield(cancellationToken: this.GetCancellationTokenOnDestroy());
             }
+            gizmoExtents = Vector3.zero;
+            _isAttacking = false;
         }
         void OnDrawGizmos()
         {
             var center = _boxcollderPosition.transform.position;
             Gizmos.color = Color.green;
-            Gizmos.DrawWireCube(center, halfExtents * 2);
+            Gizmos.DrawWireCube(center, gizmoExtents * 2);
         }
     }
 

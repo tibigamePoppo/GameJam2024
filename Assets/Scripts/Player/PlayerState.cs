@@ -15,6 +15,7 @@ namespace Player
         SecondJump,
         Attack,
         DownAttack,
+        WideAttack,
         Dead,
     }
     public class PlayerState : MonoBehaviour

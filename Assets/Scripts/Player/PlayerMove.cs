@@ -60,20 +60,27 @@ namespace Player
                 }).AddTo(this);
 
             _playerState.OnChangePlayerState
-                .Where(x => x == StateType.DownAttack)
                 .Subscribe(x => {
-                    MoveDown();
+                    switch(x)
+                    {
+                        case StateType.Attack:
+                            _moveDirection.y = _moveDirection.y < 1 ? _moveDirection.y + 1 : _moveDirection.y;
+                            break;
+                        case StateType.DownAttack:
+                            _moveDirection.y = _moveDirection.y > -3 ? -3 : _moveDirection.y - 3;
+                            break;
+                        case StateType.WideAttack:
+                            _moveDirection.y = _moveDirection.y > -1 ? _moveDirection.y  : -0.5f;
+                            break;
+                    }
                 });
 
-            _playerState.OnChangePlayerState
-                .Where(x => x == StateType.Attack)
-                .Subscribe(x => {
-                    _moveDirection.y = _moveDirection.y < 1 ? _moveDirection.y + 1: _moveDirection.y;
-                });
 
             //ƒWƒƒƒ“ƒv‚Ìˆ—
             this.UpdateAsObservable()
-                .Where(_ => _isPlaying && _playerState.GetPlayerState != StateType.Attack && _isPlaying)
+                .Where(_ => _isPlaying 
+                            && ( _playerState.GetPlayerState != StateType.Dash
+                            || _playerState.GetPlayerState != StateType.Jump))
                 .Where(_ => Input.GetKeyDown(KeyCode.Space))
                 .ThrottleFirst(TimeSpan.FromSeconds(0.4))
                 .Subscribe(_ =>
@@ -116,10 +123,7 @@ namespace Player
                     _moveDirection.z = _playerMoveSpeed;
                 }).AddTo(this);
         }
-        public void MoveDown()
-        {
-            _moveDirection.y = _moveDirection.y > -2 ? -2 : _moveDirection.y - 2;
-        }
+
         private void Update()
         {
             if (!_isPlaying) return;
@@ -132,8 +136,10 @@ namespace Player
             {
                 _moveDirection.x += _playerSlideSpeed;
             }
-
-            _moveDirection.y += Physics.gravity.y * Time.deltaTime;
+            if (_playerState.GetPlayerState != StateType.WideAttack)
+            {
+                _moveDirection.y += Physics.gravity.y * Time.deltaTime;
+            }
 
             _characterController.Move(_moveDirection * Time.deltaTime);
         }
