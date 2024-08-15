@@ -1,10 +1,6 @@
 using Audio;
 using Interface;
-using Player;
-using Singleton.Effect;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UniRx;
 using UnityEngine;
 
@@ -15,15 +11,15 @@ namespace Player
         [SerializeField]
         private int _startHP;
         [SerializeField]
-        private float _playerMoveSpeed = 5;
-        private const int MAXHP = 18;
-        private PlayerState _playerState;
+        private float _playerMoveSpeed = 5;//初期移動速度
+        private const int MAXHP = 18;//HPの最大値
+        private PlayerState _playerState;//現在の状態を管理するスクリプト
         private ReactiveProperty<int> _currentHp = new ReactiveProperty<int>();
-        public IObservable<int> OnChangeCurrentHp { get { return _currentHp; } }
-        public int GetCurrentHp { get { return _currentHp.Value; } }
         private ReactiveProperty<float> _moveSpeed = new ReactiveProperty<float>();
-        public IObservable<float> OnChangeMoveSpeed{ get { return _moveSpeed; } }
-        public float GetMoveSpeed {  get { return _moveSpeed.Value; } }
+        public IObservable<int> OnChangeCurrentHp { get { return _currentHp; } }
+        public IObservable<float> OnChangeMoveSpeed { get { return _moveSpeed; } }
+        public int GetCurrentHp { get { return _currentHp.Value; } }
+        public float GetMoveSpeed { get { return _moveSpeed.Value; } }
         void Start()
         {
             _playerState = GetComponent<PlayerState>();
@@ -33,7 +29,6 @@ namespace Player
         public void Damage(int damage)
         {
             _currentHp.Value = damage > 0 ? _currentHp.Value - damage : 0;
-            //Debug.Log($"ダメージを受けた。現在体力は{_currentHp.Value}");
             if (_currentHp.Value <= 0)
             {
                 _playerState.ChangeState(StateType.Dead);
@@ -47,7 +42,6 @@ namespace Player
         {
             _currentHp.Value = _currentHp.Value + healValue < MAXHP ? _currentHp.Value + healValue : _currentHp.Value;
             SEManager.Instance.ShotSE(SEType.Get);
-            //Debug.Log($"回復した！現在体力は{_currentHp.Value}");
         }
         public void AddSpeed(float add)
         {

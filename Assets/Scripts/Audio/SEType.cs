@@ -1,4 +1,4 @@
-public enum SEType 
+public enum SEType
 {
     Attack,
     Attack1,

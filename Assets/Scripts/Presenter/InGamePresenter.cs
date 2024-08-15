@@ -4,7 +4,6 @@ using UniRx;
 using System.Linq;
 using UnityEngine;
 using Player;
-using System;
 using Cysharp.Threading.Tasks;
 using UnityEngine.SceneManagement;
 using DG.Tweening;
@@ -39,11 +38,11 @@ namespace Presenter
             _ingameManager.OnChangeIngameState
                 .Subscribe(x =>
                 {
-                switch (x)
-                {
-                    case IngameType.Ready:
-                        _descriptionPanel.SetActive(false);
-                        _tapToStart.DOFade(1, 0.5f).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo).From(0);
+                    switch (x)
+                    {
+                        case IngameType.Ready:
+                            _descriptionPanel.SetActive(false);
+                            _tapToStart.DOFade(1, 0.5f).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo).From(0);
                             DOTween.Sequence()
                                 .AppendCallback(() =>
                                 {
@@ -84,8 +83,8 @@ namespace Presenter
                     }
                 }).AddTo(this);
 
-           _ingameManager.Score
-                .Subscribe(x => _scoreText.text = $"SCORE : {x.ToString("f1")}").AddTo(this);
+            _ingameManager.Score
+                 .Subscribe(x => _scoreText.text = $"SCORE : {x.ToString("f1")}").AddTo(this);
             //HPŠÖŒW
             int _currentHp = _playerStatus.GetCurrentHp;
             for (int i = 0; i < Hps.Length; i++)
@@ -107,17 +106,17 @@ namespace Presenter
                     for (int j = 0; j < Hps.Length; j++)
                     {
                         var targetObject = Hps[j];
-                        if(j < hp)
+                        if (j < hp)
                         {
                             targetObject.SetActive(true);
-                            if(j == hp - 1)
+                            if (j == hp - 1)
                             {
                                 targetObject.transform.DOScale(Vector3.one, 0.5f).From(Vector3.zero).SetEase(Ease.OutBounce);
                             }
                         }
                         else
                         {
-                            targetObject.transform.DOShakePosition(0.5f,strength:5).OnComplete(() => targetObject.SetActive(false));
+                            targetObject.transform.DOShakePosition(0.5f, strength: 5).OnComplete(() => targetObject.SetActive(false));
                         }
                     }
                 }).AddTo(this);
