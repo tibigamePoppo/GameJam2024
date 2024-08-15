@@ -27,6 +27,5 @@ namespace Singleton.Effect
             var effect = Instantiate(emitEffect,emitPosition,Quaternion.identity);
             Destroy(effect,10f);
         }
-
     }
 }

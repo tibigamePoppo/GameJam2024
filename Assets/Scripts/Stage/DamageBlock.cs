@@ -9,11 +9,13 @@ public class DamageBlock : MonoBehaviour, IDamagable
     private int _damage;
     [SerializeField]
     private GameObject _healOrb;
+    [SerializeField]
+    private GameObject _ball;
 
-    
+
     private void OnTriggerEnter(Collider other)
     {
-        if(other.transform.root.TryGetComponent(out IDamagable damagable) && other.transform.root.CompareTag("Player"))
+        if (other.transform.root.TryGetComponent(out IDamagable damagable) && other.transform.root.CompareTag("Player"))
         {
             EffectEmiter.Instance.EmitEffect(EffectType.WallHit, other.ClosestPointOnBounds(this.transform.position));
             damagable.Damage(_damage);
@@ -27,10 +29,16 @@ public class DamageBlock : MonoBehaviour, IDamagable
         _hp = _hp - damage;
         if (_hp <= 0)
         {
-            bool SpawnHealOrb = UnityEngine.Random.Range(0, 100) < ConfigParameter.HealDropPerennt;
+            var randomValue = UnityEngine.Random.Range(0, 100);
+            bool SpawnHealOrb = randomValue < ConfigParameter.HealDropPerennt;
+            bool SpawnBall = randomValue < ConfigParameter.HealDropPerennt + ConfigParameter.BallDropPersentByBlock;
             if (SpawnHealOrb)
             {
-                Instantiate(_healOrb,transform.position, Quaternion.identity);
+                Instantiate(_healOrb, transform.position, Quaternion.identity);
+            }
+            else if (SpawnBall)
+            {
+                Instantiate(_ball, transform.position, Quaternion.identity);
             }
             Destroy(gameObject);
         }
