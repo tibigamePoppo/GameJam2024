@@ -1,4 +1,5 @@
 using Audio;
+using Cysharp.Threading.Tasks;
 using Interface;
 using System;
 using UniRx;
@@ -20,6 +21,7 @@ namespace Player
         public IObservable<float> OnChangeMoveSpeed { get { return _moveSpeed; } }
         public int GetCurrentHp { get { return _currentHp.Value; } }
         public float GetMoveSpeed { get { return _moveSpeed.Value; } }
+        private bool _isArmor = false;
         void Start()
         {
             _playerState = GetComponent<PlayerState>();
@@ -28,6 +30,7 @@ namespace Player
         }
         public void Damage(int damage)
         {
+            if (_isArmor) return;
             _currentHp.Value = damage > 0 ? _currentHp.Value - damage : 0;
             if (_currentHp.Value <= 0)
             {
@@ -37,6 +40,13 @@ namespace Player
             {
                 SEManager.Instance.ShotSE(SEType.Damage);
             }
+            Armor().Forget();
+        }
+        private async UniTaskVoid Armor()
+        {
+            _isArmor = true;
+            await UniTask.Delay(TimeSpan.FromSeconds(0.5f));
+            _isArmor = false;
         }
         public void Heal(int healValue)
         {

@@ -65,7 +65,7 @@ namespace Player
                             _moveDirection.y = _moveDirection.y < 1 ? _moveDirection.y + 1 : _moveDirection.y;
                             break;
                         case StateType.DownAttack:
-                            _moveDirection.y = _moveDirection.y > -3 ? -3 : _moveDirection.y - 3;
+                            _moveDirection.y = _moveDirection.y > -6 ? -6 : _moveDirection.y - 6;
                             break;
                         case StateType.WideAttack:
                             _moveDirection.y = _moveDirection.y > -1 ? _moveDirection.y : -0.5f;
@@ -80,7 +80,7 @@ namespace Player
                             && (_playerState.GetPlayerState != StateType.Dash
                             || _playerState.GetPlayerState != StateType.Jump))
                 .Where(_ => Input.GetKeyDown(KeyCode.Space))
-                .ThrottleFirst(TimeSpan.FromSeconds(0.4))
+                .ThrottleFirst(TimeSpan.FromSeconds(0.2))
                 .Subscribe(_ =>
                 {
                     if (_playerState.GetPlayerState == StateType.Dash && isGrounded())

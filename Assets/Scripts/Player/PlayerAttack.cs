@@ -3,6 +3,7 @@ using UniRx;
 using System;
 using UniRx.Triggers;
 using Cysharp.Threading.Tasks;
+using Stage;
 
 namespace Player
 {
@@ -116,6 +117,7 @@ namespace Player
                         shotDirection = Vector3.Normalize(shotDirection);
                         rigidbody.velocity = Vector3.zero;
                         rigidbody.AddForce(shotDirection * (10 + _playerStatus.GetMoveSpeed * 1.5f), ForceMode.Impulse);
+                        hit.collider.GetComponent<Ball>().PlayerBound();
                         findAttack = true;
                     }
                 }
@@ -126,13 +128,12 @@ namespace Player
             gizmoExtents = Vector3.zero;
             _isAttacking = false;
         }
-#if UNITY_EDITOR
+        /*
         void OnDrawGizmos()
         {
             var center = _boxcollderPosition.transform.position;
             Gizmos.color = Color.green;
             Gizmos.DrawWireCube(center, gizmoExtents * 2);
-        }
+        }*/
     }
-#endif
 }
