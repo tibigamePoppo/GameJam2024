@@ -4,12 +4,15 @@ using UniRx.Triggers;
 using System;
 using Cysharp.Threading.Tasks;
 using System.Threading;
+using System.Runtime.InteropServices;
+using Config;
 
 namespace Player
 {
     public class PlayerMove : MonoBehaviour
     {
         private float _playerMoveSpeed;
+        private float _basePlayerMoveSpeed;
         [SerializeField]
         private float _playerSlideSpeed;
         [SerializeField]
@@ -28,7 +31,6 @@ namespace Player
         Vector3 _moveDirection = Vector3.zero;
         int _sideDirection = 0;
         float time = 0;
-
         public float PlayerMoveSpeed { get => _playerMoveSpeed; }
 
         void Start()
@@ -46,14 +48,18 @@ namespace Player
                     _isPlaying = true;
                 });
             _playerStatus.OnChangeMoveSpeed
+                .Skip(1)
                 .Subscribe(x =>
                 {
+                    ConfigParameter.globalSpeed = 1 + (_playerMoveSpeed - _basePlayerMoveSpeed) / 50;
                     _playerMoveSpeed = x;
                 }).AddTo(this);
             _playerStatus.OnChangeMoveSpeed
                 .First()
                 .Subscribe(x =>
                 {
+                    _playerMoveSpeed = x;
+                    _basePlayerMoveSpeed = _playerMoveSpeed;
                     _moveDirection.z = _playerMoveSpeed;
                 }).AddTo(this);
 
@@ -81,20 +87,20 @@ namespace Player
                             && (_playerState.GetPlayerState != StateType.Dash
                             || _playerState.GetPlayerState != StateType.Jump))
                 .Where(_ => Input.GetKeyDown(KeyCode.Space))
-                .ThrottleFirst(TimeSpan.FromSeconds(0.2))
                 .Subscribe(_ =>
                 {
                     if (_playerState.GetPlayerState == StateType.Dash && isGrounded())
                     {
+                        time = 1;
                         _playerState.ChangeState(StateType.Jump);
-                        _moveDirection.y = _playerJumpPower;
+                        _moveDirection.y = _playerJumpPower * ConfigParameter.globalSpeed;
                         _characterController.Move(_moveDirection * Time.deltaTime);
                     }
                     else if (_playerState.GetPlayerState == StateType.Jump && !isGrounded())
                     {
                         time = 1;
                         _playerState.ChangeState(StateType.SecondJump);
-                        _moveDirection.y = _moveDirection.y > _playerJumpPower / 2 ? _moveDirection.y + _playerJumpPower / 2 : _playerJumpPower;
+                        _moveDirection.y = _moveDirection.y > (_playerJumpPower * ConfigParameter.globalSpeed) / 2 ? _moveDirection.y + (_playerJumpPower * ConfigParameter.globalSpeed) / 2 : _playerJumpPower * ConfigParameter.globalSpeed;
                         _characterController.Move(_moveDirection * Time.deltaTime);
                     }
                 }).AddTo(this);
@@ -140,18 +146,17 @@ namespace Player
             }
             if(!isGrounded())
             {
-                time += Time.deltaTime * 4;
+                time += Time.deltaTime * 6.6f * Mathf.Pow(ConfigParameter.globalSpeed, 3.2f);
             }
-            if (_playerState.GetPlayerState != StateType.WideAttack && _moveDirection.y > 0)
+            if (_playerState.GetPlayerState != StateType.WideAttack && _moveDirection.y >= 0)
             {
-                _moveDirection.y += Physics.gravity.y * Time.deltaTime * time;
+                _moveDirection.y -= _playerJumpPower * Time.deltaTime * time;
                 if(_moveDirection.y < 0) time = 1;
             }
             else if(_playerState.GetPlayerState != StateType.WideAttack)
             {
-                _moveDirection.y += Physics.gravity.y * Time.deltaTime * time;
+                _moveDirection.y -= _playerJumpPower * Time.deltaTime * time;
             }
-
             _characterController.Move(_moveDirection * Time.deltaTime);
         }
         private async UniTask GroundCheck(CancellationToken token)
