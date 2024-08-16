@@ -4,6 +4,7 @@ using System;
 using UniRx.Triggers;
 using Cysharp.Threading.Tasks;
 using Stage;
+using Config;
 
 namespace Player
 {
@@ -20,6 +21,9 @@ namespace Player
         private Vector3 gizmoExtents = new Vector3(0.8f, 0.8f, 0.8f); // 各軸についてのボックスサイズの半分
         private bool _isAttacking = false;
 
+        private Subject<Unit> _hit = new Subject<Unit>();
+        public IObservable<Unit> OnHit { get { return _hit; } }
+
         private bool _isPlaying;
         void Start()
         {
@@ -34,7 +38,7 @@ namespace Player
             this.UpdateAsObservable()
                 .Where(_ => _isPlaying)
                 .Where(_ => Input.GetKey(KeyCode.W))
-                .ThrottleFirst(TimeSpan.FromSeconds(0.4))
+                .ThrottleFirst(TimeSpan.FromSeconds(0.4 / ConfigParameter.globalSpeed))
                 .Subscribe(_ =>
                 {
                     if (_playerState.GetPlayerState == StateType.Attack)
@@ -74,7 +78,7 @@ namespace Player
 
             _playerState.OnChangePlayerState
                 .Where(x => x == StateType.Attack)
-                .Delay(TimeSpan.FromSeconds(0.65f))
+                .Delay(TimeSpan.FromSeconds(0.65f / ConfigParameter.globalSpeed))
                 .Subscribe(x =>
                 {
                     if (_playerState.GetPlayerState != StateType.WideAttack)
@@ -84,7 +88,7 @@ namespace Player
                 });
             _playerState.OnChangePlayerState
                 .Where(x => x == StateType.WideAttack)
-                .Delay(TimeSpan.FromSeconds(0.8f))
+                .Delay(TimeSpan.FromSeconds(1.2f / ConfigParameter.globalSpeed))
                 .Subscribe(x =>
                 {
                     _playerState.ChangeState(StateType.Dash);
@@ -96,7 +100,9 @@ namespace Player
             var elapsedTime = 0.0f;
             var findAttack = false;
             gizmoExtents = halfExtents;
-            while (1.5f > elapsedTime)
+            float decisionTime = 1.2f / ConfigParameter.globalSpeed;
+            await UniTask.Delay(TimeSpan.FromSeconds(0.3f), cancellationToken: this.GetCancellationTokenOnDestroy());
+            while (decisionTime > elapsedTime)
             {
                 var center = _boxcollderPosition.transform.position;
                 var hits = Physics.BoxCastAll
@@ -121,7 +127,11 @@ namespace Player
                         findAttack = true;
                     }
                 }
-                if (findAttack) break;  // 攻撃対象への処理が完了したらタスク終了
+                if (findAttack)
+                {
+                    _hit.OnNext(default);
+                    break;  // 攻撃対象への処理が完了したらタスク終了
+                }
                 elapsedTime += Time.deltaTime;
                 await UniTask.Yield(cancellationToken: this.GetCancellationTokenOnDestroy());
             }

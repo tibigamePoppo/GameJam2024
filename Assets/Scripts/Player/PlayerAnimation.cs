@@ -2,6 +2,10 @@ using UnityEngine;
 using UniRx;
 using UniRx.Triggers;
 using Audio;
+using Config;
+using Cysharp.Threading.Tasks;
+using System;
+using Singleton.Effect;
 
 namespace Player
 {
@@ -10,6 +14,7 @@ namespace Player
         [SerializeField]
         Animator _animator;
         PlayerState _playerState;
+        PlayerAttack _playerAttack;
         [SerializeField]
         GameObject _hammer;
         Vector3 standardPosition = new Vector3(-0.45f, 0.1f, 0.1f);
@@ -19,6 +24,7 @@ namespace Player
         void Start()
         {
             _playerState = GetComponent<PlayerState>();
+            _playerAttack = GetComponent<PlayerAttack>();
             _playerState.OnChangePlayerState
                 .Where(x => x == StateType.Dash)
                 .First()
@@ -27,11 +33,18 @@ namespace Player
                     hammerRotation(true);
                     _animator.SetBool("Start", true);
                 }).AddTo(this);
+            _playerAttack.OnHit
+                .Where(_ => _playerState.GetPlayerState == StateType.Attack || _playerState.GetPlayerState == StateType.DownAttack || _playerState.GetPlayerState == StateType.WideAttack)
+                .Subscribe(_ =>
+                {
+                    HitStop().Forget();
+                }).AddTo(this);
 
             _playerState.OnChangePlayerState
                 .Skip(1)
                 .Subscribe(x =>
                 {
+                    _animator.SetFloat("AnimationSpeed", ConfigParameter.globalSpeed);
                     switch (x)
                     {
                         case StateType.Dash:
@@ -87,6 +100,15 @@ namespace Player
                 _hammer.transform.localPosition = downPosition;
                 _hammer.transform.localRotation = Quaternion.Euler(downRotation);
             }
+        }
+        private async UniTask HitStop()
+        {
+            await UniTask.Delay(TimeSpan.FromSeconds(0.1f), cancellationToken: this.GetCancellationTokenOnDestroy());
+            EffectEmiter.Instance.EmitEffect(EffectType.HammerHit, _hammer.transform.position + transform.forward);
+            _animator.speed = 0f;
+            await UniTask.Delay(TimeSpan.FromSeconds(0.2f), cancellationToken: this.GetCancellationTokenOnDestroy());
+            _animator.speed = 1f;
+
         }
     }
 }

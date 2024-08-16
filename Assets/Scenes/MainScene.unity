@@ -3166,12 +3166,20 @@ PrefabInstance:
       value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 4242155327971444880, guid: 0e1feed381bad42408fd7f055c79dfcd, type: 3}
+      propertyPath: TESTPRAM
+      value: 1.96
+      objectReference: {fileID: 0}
+    - target: {fileID: 4242155327971444880, guid: 0e1feed381bad42408fd7f055c79dfcd, type: 3}
+      propertyPath: TESTPRAM2
+      value: 3.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4242155327971444880, guid: 0e1feed381bad42408fd7f055c79dfcd, type: 3}
       propertyPath: _jumpTime
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4242155327971444880, guid: 0e1feed381bad42408fd7f055c79dfcd, type: 3}
       propertyPath: _playerJumpPower
-      value: 9
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 4494936295692842497, guid: 0e1feed381bad42408fd7f055c79dfcd, type: 3}
       propertyPath: m_LocalPosition.y
@@ -3180,6 +3188,10 @@ PrefabInstance:
     - target: {fileID: 4494936295692842497, guid: 0e1feed381bad42408fd7f055c79dfcd, type: 3}
       propertyPath: m_LocalPosition.z
       value: -4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7093240282790554507, guid: 0e1feed381bad42408fd7f055c79dfcd, type: 3}
+      propertyPath: _startHP
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 9100698359641984782, guid: 0e1feed381bad42408fd7f055c79dfcd, type: 3}
       propertyPath: m_LocalPosition.x
