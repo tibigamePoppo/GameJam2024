@@ -9,8 +9,9 @@ namespace Stage.Item
         private const int HEALVALUE = 1;
         private void OnTriggerEnter(Collider other)
         {
-            if (other.transform.root.TryGetComponent(out PlayerStatus status))
+            if (other.CompareTag("Player")|| other.CompareTag("Ball"))
             {
+                var status = FindObjectOfType<PlayerStatus>();
                 status.Heal(HEALVALUE);
                 EffectEmiter.Instance.EmitEffect(EffectType.GetHealOrb, other.ClosestPointOnBounds(this.transform.position));
                 Destroy(gameObject, 1f);

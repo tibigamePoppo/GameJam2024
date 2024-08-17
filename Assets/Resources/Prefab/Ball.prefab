@@ -97,6 +97,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _rigidBody: {fileID: 1249468124071916740}
+  _rotateSpeed: 5
 --- !u!1 &4018579024704908194
 GameObject:
   m_ObjectHideFlags: 0
@@ -113,7 +114,7 @@ GameObject:
   - component: {fileID: 7466047697427194180}
   m_Layer: 7
   m_Name: Ball
-  m_TagString: Untagged
+  m_TagString: Ball
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -146,7 +147,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49f949c3af75d954a8e7fe2914da1205, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _hp: 3
+  _startHp: 3
 --- !u!33 &5146832188485384059
 MeshFilter:
   m_ObjectHideFlags: 0
