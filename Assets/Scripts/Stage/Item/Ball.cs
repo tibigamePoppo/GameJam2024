@@ -1,7 +1,9 @@
+using DG.Tweening;
 using Interface;
 using Manager;
 using Singleton.Effect;
 using System.Collections.Generic;
+using UniRx.Triggers;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -77,12 +79,27 @@ namespace Stage
         }
         private Vector3 GetNormal(GameObject target, bool edge)
         {
+            //äOÇÃï«Ç™îªíËÇ™î≤ÇØÇ‚Ç∑Ç¢ÇÃÇ≈ì¡ï Ç»èàóù
+            if(LayerMask.LayerToName(target.layer) == "Jumpable")
+            {
+                switch(target.name)
+                {
+                    case "Roof":
+                        return -transform.up;
+                    case "Floow":
+                        return transform.up;
+                    case "Right":
+                        return -transform.right;
+                    case "Left":
+                        return transform.right;
+                }
+            }
             var diffPosition = target.transform.position - transform.position;
             var diffSize = target.transform.localScale / 2;
             //Debug.Log($"diffPosition {diffPosition} : diffSize {diffSize} : target {target.name}");
             float xVector = Mathf.Abs(diffPosition.x / diffSize.x);
             float yVector = Mathf.Abs(diffPosition.y / diffSize.y);
-            float zVector = Mathf.Abs(diffPosition.z / diffSize.z);
+            float zVector =  Mathf.Abs(diffPosition.z / diffSize.z);
             Vector3 normalVector = Vector3.zero;
             float maxVector = Mathf.Max(xVector, yVector, zVector);
             float effectiveVector = edge ? maxVector * 0.75f : maxVector;//óLå¯Ç»ê¨ï™

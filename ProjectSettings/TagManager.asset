@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - Stage
+  - Ball
   layers:
   - Default
   - TransparentFX
